@@ -99,8 +99,10 @@ function Topic() {
     // 检查API配置是否有效
     if (handleCheck()) {
       // 从任务store中获取id和setQuestion方法
-      // 如果你直接调用 useTaskStore(...)，并且通常会传入一个选择器函数 (state => state.something)，那么你正在把它当作一个 React Hook 使用。这必须在组件顶层。
-      // 如果你在使用它上面的方法，比如 useTaskStore.getState() 或 useTaskStore.setState()，那么你正在把它当作一个普通对象使用。这可以在任何地方进行。
+      // 1.如果你直接调用 useTaskStore(...)，并且通常会传入一个选择器函数 (state => state.something)，
+      // 那么你正在把它当作一个 React Hook 使用。这必须在组件顶层。
+      // 2.如果你在使用它上面的方法，比如 useTaskStore.getState() 或 useTaskStore.setState()，
+      // 那么你正在把它当作一个普通对象使用。这可以在任何地方进行。
       const { id, setQuestion } = useTaskStore.getState();
       try {
         // 设置思考状态为true并启动计时器
@@ -114,8 +116,10 @@ function Topic() {
         }
 
         // 更新研究主题
+        // 更新研究主题到store中
         setQuestion(values.topic);
-        // 开始提问流程
+        // await关键字会暂停当前函数的执行，直到askQuestions()这个异步操作完成
+        // 这确保了在继续执行后续代码之前，提问流程已经完全结束
         await askQuestions();
       } finally {
         // 无论成功失败都重置状态和停止计时
@@ -181,20 +185,22 @@ function Topic() {
       {/* 表单部分 */}
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)}>
-          {/* 主题输入框 */}
+          {/* 主题输入框 - 用于输入研究主题的文本区域 */}
           <FormField
-            control={form.control}
-            name="topic"
+            control={form.control} // 表单控制器
+            name="topic" // 字段名称
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="mb-2 text-base font-semibold">
+                  {/* 使用i18n的t函数来获取研究主题标签的多语言翻译文本 */}
                   {t("research.topic.topicLabel")}
                 </FormLabel>
                 <FormControl>
+                  {/* 多行文本输入框组件 */}
                   <Textarea
-                    rows={3}
-                    placeholder={t("research.topic.topicPlaceholder")}
-                    {...field}
+                    rows={3} // 设置文本框高度为3行
+                    placeholder={t("research.topic.topicPlaceholder")} // 占位文本
+                    {...field} // 展开字段属性
                   />
                 </FormControl>
               </FormItem>
@@ -218,18 +224,23 @@ function Topic() {
                 ) : null}
 
                 {/* 添加资源下拉菜单 */}
+                {/* 下拉菜单组件，用于添加资源 */}
                 <DropdownMenu>
+                  {/* 触发下拉菜单的按钮 */}
                   <DropdownMenuTrigger asChild>
                     <div className="inline-flex border p-2 rounded-md text-sm cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800">
                       <FilePlus className="w-5 h-5" />
                       <span className="ml-1">{t("knowledge.addResource")}</span>
                     </div>
                   </DropdownMenuTrigger>
+                  {/* 下拉菜单内容 */}
                   <DropdownMenuContent>
+                    {/* 知识库选项 */}
                     <DropdownMenuItem onClick={() => openKnowledgeList()}>
                       <BookText />
                       <span>{t("knowledge.knowledge")}</span>
                     </DropdownMenuItem>
+                    {/* 本地文件选项 - 点击时检查配置并打开文件选择器 */}
                     <DropdownMenuItem
                       onClick={() =>
                         handleCheck() && fileInputRef.current?.click()
@@ -238,6 +249,7 @@ function Topic() {
                       <Paperclip />
                       <span>{t("knowledge.localFile")}</span>
                     </DropdownMenuItem>
+                    {/* 网页爬虫选项 - 点击时检查配置并打开爬虫弹窗 */}
                     <DropdownMenuItem
                       onClick={() => handleCheck() && setOpenCrawler(true)}
                     >
