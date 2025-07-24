@@ -59,3 +59,43 @@ interface WebSearchResult {
   url: string;
   title?: string;
 }
+
+// 聊天消息接口
+interface ChatMessage {
+  id: string;
+  type: 'user' | 'assistant' | 'system' | 'error';
+  content: string;
+  timestamp: number;
+  metadata?: {
+    model?: string;
+    tokens?: number;
+    duration?: number;
+    sources?: string[];
+  };
+}
+
+// 聊天会话接口
+interface ChatSession {
+  id: string;
+  title: string;
+  messages: ChatMessage[];
+  createdAt: number;
+  updatedAt: number;
+  settings: {
+    model: string;
+    provider: string;
+    temperature?: number;
+  };
+  knowledgeContext?: string[];
+}
+
+// 聊天历史接口
+interface ChatHistory {
+  id: string;
+  title: string;
+  lastMessage: string;
+  timestamp: string;
+  messageCount: number;
+  createdAt: number;
+  updatedAt: number;
+}
