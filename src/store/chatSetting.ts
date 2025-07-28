@@ -71,7 +71,7 @@ interface ChatSettingFunction {
 
 export const defaultChatValues: ChatSettingStore = {
   provider: "google",
-  mode: "",
+  mode: "proxy",
   model: "gemini-2.0-flash",
   googleApiKey: "",
   googleApiProxy: "",

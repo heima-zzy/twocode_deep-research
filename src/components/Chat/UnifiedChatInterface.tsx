@@ -20,6 +20,7 @@ import { useChatStore } from "@/store/chat";
 import { useChatSettingStore } from "@/store/chatSetting";
 import ChatMessageList from "./ChatMessageList";
 import KnowledgeContextSelector from "./KnowledgeContextSelector";
+import UrlContextInjector from "./UrlContextInjector";
 import { cn } from "@/utils/style";
 import { toast } from "sonner";
 
@@ -328,10 +329,16 @@ export default function UnifiedChatInterface() {
         {isChatMode && (
           <div className="flex-shrink-0 border-t bg-background p-4 pb-32">
             <div className="flex items-center justify-between">
-              <KnowledgeContextSelector
-                selectedKnowledgeIds={selectedKnowledgeIds}
-                onSelectionChange={setSelectedKnowledgeIds}
-              />
+              <div className="flex items-center gap-2">
+                <KnowledgeContextSelector
+                  selectedKnowledgeIds={selectedKnowledgeIds}
+                  onSelectionChange={setSelectedKnowledgeIds}
+                />
+                <UrlContextInjector
+                  selectedKnowledgeIds={selectedKnowledgeIds}
+                  onSelectionChange={setSelectedKnowledgeIds}
+                />
+              </div>
               <div className="text-xs text-muted-foreground">
                 {selectedKnowledgeIds.length > 0
                   ? t("knowledge_context_enabled", "知识库上下文已启用 ({{count}} 项)", {
@@ -367,6 +374,10 @@ export default function UnifiedChatInterface() {
               <div className="flex items-center justify-center">
                 <div className="flex items-center gap-4">
                   <KnowledgeContextSelector
+                    selectedKnowledgeIds={selectedKnowledgeIds}
+                    onSelectionChange={setSelectedKnowledgeIds}
+                  />
+                  <UrlContextInjector
                     selectedKnowledgeIds={selectedKnowledgeIds}
                     onSelectionChange={setSelectedKnowledgeIds}
                   />

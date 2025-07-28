@@ -118,6 +118,40 @@
       "back": "Back",
       "reset": "Reset",
       "submit": "Submit"
+    },
+    "urlContext": {
+      "title": "Website Context Injection",
+      "description": "Add website content as conversation context",
+      "urlPlaceholder": "Please enter website URL...",
+      "addUrl": "Add Website",
+      "fetchAll": "Fetch All",
+      "clearAll": "Clear All",
+      "selectAll": "Select All",
+      "unselectAll": "Unselect All",
+      "addToContext": "Add to Context",
+      "removeFromContext": "Remove from Context",
+      "crawlerType": "Crawler Type",
+      "jina": "Jina Crawler",
+      "local": "Local Crawler",
+      "status": {
+        "pending": "Pending",
+        "loading": "Loading",
+        "success": "Success",
+        "error": "Error"
+      },
+      "actions": {
+        "fetch": "Fetch",
+        "retry": "Retry",
+        "remove": "Remove"
+      },
+      "messages": {
+        "urlRequired": "Please enter a website URL",
+        "invalidUrl": "Please enter a valid website URL",
+        "fetchSuccess": "Website content fetched successfully",
+        "fetchError": "Failed to fetch website content",
+        "addedToContext": "Added to conversation context",
+        "removedFromContext": "Removed from conversation context"
+      }
     }
   },
   "artifact": {

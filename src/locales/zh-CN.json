@@ -118,6 +118,40 @@
       "back": "返回",
       "reset": "重置",
       "submit": "提交"
+    },
+    "urlContext": {
+      "title": "网站上下文注入",
+      "description": "添加网站内容作为对话上下文",
+      "urlPlaceholder": "请输入网站地址...",
+      "addUrl": "添加网站",
+      "fetchAll": "批量抓取",
+      "clearAll": "清空列表",
+      "selectAll": "全选",
+      "unselectAll": "取消全选",
+      "addToContext": "添加到上下文",
+      "removeFromContext": "从上下文移除",
+      "crawlerType": "爬虫类型",
+      "jina": "Jina爬虫",
+      "local": "本地爬虫",
+      "status": {
+        "pending": "待处理",
+        "loading": "抓取中",
+        "success": "成功",
+        "error": "失败"
+      },
+      "actions": {
+        "fetch": "抓取",
+        "retry": "重试",
+        "remove": "移除"
+      },
+      "messages": {
+        "urlRequired": "请输入网站地址",
+        "invalidUrl": "请输入有效的网站地址",
+        "fetchSuccess": "网站内容抓取成功",
+        "fetchError": "网站内容抓取失败",
+        "addedToContext": "已添加到对话上下文",
+        "removedFromContext": "已从对话上下文移除"
+      }
     }
   },
   "artifact": {

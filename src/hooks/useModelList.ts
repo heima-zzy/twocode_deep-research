@@ -107,33 +107,20 @@ interface OllamaModel {
   };
 }
 
-function useModelList(useStore?: 'chat' | 'setting') {
+function useModelList() {
   const [modelList, setModelList] = useState<string[]>([]);
-  const storeType = useStore || 'setting';
-  
-  // 根据传入的参数选择使用哪个store
-  const getStoreState = () => {
-    if (storeType === 'chat') {
-      const { useChatSettingStore } = require('@/store/chatSetting');
-      return useChatSettingStore.getState();
-    } else {
-      return useSettingStore.getState();
-    }
-  };
-  
-  const { mode, provider } = getStoreState();
+  const { mode, provider } = useSettingStore.getState();
 
   useEffect(() => {
     setModelList([]);
   }, [provider]);
 
   async function refresh(provider: string): Promise<string[]> {
-    const storeState = getStoreState();
-    const accessPassword = storeState.accessPassword;
+    const { accessPassword } = useSettingStore.getState();
     const accessKey = generateSignature(accessPassword, Date.now());
 
     if (provider === "google") {
-      const { googleApiKey: apiKey = "", googleApiProxy: apiProxy } = storeState;
+      const { apiKey = "", apiProxy } = useSettingStore.getState();
       if (mode === "local" && !apiKey) {
         return [];
       }
@@ -159,7 +146,8 @@ function useModelList(useStore?: 'chat' | 'setting') {
       setModelList(newModelList);
       return newModelList;
     } else if (provider === "openrouter") {
-      const { openRouterApiKey = "", openRouterApiProxy } = storeState;
+      const { openRouterApiKey = "", openRouterApiProxy } =
+        useSettingStore.getState();
       if (mode === "local" && !openRouterApiKey) {
         return [];
       }
@@ -180,7 +168,7 @@ function useModelList(useStore?: 'chat' | 'setting') {
       setModelList(newModelList);
       return newModelList;
     } else if (provider === "openai") {
-      const { openAIApiKey = "", openAIApiProxy } = storeState;
+      const { openAIApiKey = "", openAIApiProxy } = useSettingStore.getState();
       if (mode === "local" && !openAIApiKey) {
         return [];
       }
@@ -210,7 +198,8 @@ function useModelList(useStore?: 'chat' | 'setting') {
       setModelList(newModelList);
       return newModelList;
     } else if (provider === "anthropic") {
-      const { anthropicApiKey = "", anthropicApiProxy } = storeState;
+      const { anthropicApiKey = "", anthropicApiProxy } =
+        useSettingStore.getState();
       if (mode === "local" && !anthropicApiKey) {
         return [];
       }
@@ -235,7 +224,8 @@ function useModelList(useStore?: 'chat' | 'setting') {
       setModelList(newModelList);
       return newModelList;
     } else if (provider === "deepseek") {
-      const { deepseekApiKey = "", deepseekApiProxy } = storeState;
+      const { deepseekApiKey = "", deepseekApiProxy } =
+        useSettingStore.getState();
       if (mode === "local" && !deepseekApiKey) {
         return [];
       }
@@ -256,7 +246,7 @@ function useModelList(useStore?: 'chat' | 'setting') {
       setModelList(newModelList);
       return newModelList;
     } else if (provider === "xai") {
-      const { xAIApiKey = "", xAIApiProxy } = storeState;
+      const { xAIApiKey = "", xAIApiProxy } = useSettingStore.getState();
       if (mode === "local" && !xAIApiKey) {
         return [];
       }
@@ -278,7 +268,8 @@ function useModelList(useStore?: 'chat' | 'setting') {
       setModelList(newModelList);
       return newModelList;
     } else if (provider === "mistral") {
-      const { mistralApiKey = "", mistralApiProxy } = storeState;
+      const { mistralApiKey = "", mistralApiProxy } =
+        useSettingStore.getState();
       if (mode === "local" && !mistralApiKey) {
         return [];
       }
@@ -300,7 +291,8 @@ function useModelList(useStore?: 'chat' | 'setting') {
       setModelList(newModelList);
       return newModelList;
     } else if (provider === "openaicompatible") {
-      const { openAICompatibleApiKey = "", openAICompatibleApiProxy } = storeState;
+      const { openAICompatibleApiKey = "", openAICompatibleApiProxy } =
+        useSettingStore.getState();
       if (mode === "local" && !openAICompatibleApiKey) {
         return [];
       }
@@ -320,7 +312,7 @@ function useModelList(useStore?: 'chat' | 'setting') {
       setModelList(newModelList);
       return newModelList;
     } else if (provider === "pollinations") {
-      const { pollinationsApiProxy } = storeState;
+      const { pollinationsApiProxy } = useSettingStore.getState();
       const headers = new Headers();
       if (mode === "proxy") headers.set("Authorization", `Bearer ${accessKey}`);
       const response = await fetch(
@@ -339,7 +331,7 @@ function useModelList(useStore?: 'chat' | 'setting') {
       setModelList(newModelList);
       return newModelList;
     } else if (provider === "ollama") {
-      const { ollamaApiProxy } = storeState;
+      const { ollamaApiProxy } = useSettingStore.getState();
       const headers = new Headers();
       if (mode === "proxy") headers.set("Authorization", `Bearer ${accessKey}`);
       const response = await fetch(
@@ -363,6 +355,5 @@ function useModelList(useStore?: 'chat' | 'setting') {
     refresh,
   };
 }
-
 export { useModelList };
 export default useModelList;

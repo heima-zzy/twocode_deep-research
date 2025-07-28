@@ -81,7 +81,7 @@ interface SettingFunction {
 
 export const defaultValues: SettingStore = {
   provider: "google",
-  mode: "",
+  mode: "proxy",
   apiKey: "",
   apiProxy: "",
   thinkingModel: "gemini-2.0-flash-thinking-exp",
