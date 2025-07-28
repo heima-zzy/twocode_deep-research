@@ -58,9 +58,13 @@ export default function ChatHistoryList() {
     const session = sessions.find(s => s.id === sessionId);
     if (!session) return;
     
-    const newTitle = prompt(t("enter_new_title", "请输入新标题"), session.title);
+    const newTitle = prompt(t("enter_new_title", "请输入新标题（最多10个字符）"), session.title);
     if (newTitle && newTitle.trim() && newTitle !== session.title) {
-      const success = updateSessionTitle(sessionId, newTitle.trim());
+      const trimmedTitle = newTitle.trim();
+      if (trimmedTitle.length > 10) {
+        toast.error(t("title_too_long", "标题过长，已自动截取前10个字符"));
+      }
+      const success = updateSessionTitle(sessionId, trimmedTitle);
       if (success) {
         toast.success(t("title_updated", "标题已更新"));
       } else {
@@ -95,54 +99,48 @@ export default function ChatHistoryList() {
                 )}
                 onClick={() => handleSelectChat(chat.id)}
               >
-                <div className="flex-1 min-w-0">
+                <div className="flex-1 min-w-0 overflow-hidden">
                   <div className="flex items-center gap-2 mb-1">
                     <MessageSquare className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                    <h3 className="text-sm font-medium truncate">{chat.title}</h3>
+                    <h3 className="text-sm font-medium truncate max-w-[calc(100%-20px)]">{chat.title}</h3>
                   </div>
-                  <p className="text-xs text-muted-foreground truncate">
-                    {chat.lastMessage}
+                  <p className="text-xs text-muted-foreground">
+                    {chat.timestamp}
                   </p>
-                  <div className="flex items-center justify-between mt-1">
-                    <p className="text-xs text-muted-foreground">
-                      {chat.timestamp}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {chat.messageCount} 条消息
-                    </p>
-                  </div>
                 </div>
                 
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="opacity-0 group-hover:opacity-100 transition-opacity"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <MoreVertical className="w-4 h-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => handleRenameChat(chat.id)}>
-                      <Edit className="w-4 h-4 mr-2" />
-                      {t("rename", "重命名")}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleExportChat(chat.id)}>
-                      <Download className="w-4 h-4 mr-2" />
-                      {t("export", "导出")}
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                      onClick={() => handleDeleteChat(chat.id)}
-                      className="text-destructive"
-                    >
-                      <Trash2 className="w-4 h-4 mr-2" />
-                      {t("delete", "删除")}
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <div className="flex-shrink-0 ml-2">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <MoreVertical className="w-4 h-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => handleRenameChat(chat.id)}>
+                        <Edit className="w-4 h-4 mr-2" />
+                        {t("rename", "重命名")}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleExportChat(chat.id)}>
+                        <Download className="w-4 h-4 mr-2" />
+                        {t("export", "导出")}
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        onClick={() => handleDeleteChat(chat.id)}
+                        className="text-destructive"
+                      >
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        {t("delete", "删除")}
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
               </div>
             ))}
           </div>

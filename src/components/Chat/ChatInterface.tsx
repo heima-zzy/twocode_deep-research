@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { useChat } from "@/hooks/useChat";
 import { useChatStore } from "@/store/chat";
-import { useChatSettingsStore } from "@/store/chatSettings";
+import { useChatSettingStore } from "@/store/chatSetting";
 import ChatMessageList from "./ChatMessageList";
 import KnowledgeContextSelector from "./KnowledgeContextSelector";
 import { cn } from "@/utils/style";
@@ -40,16 +40,15 @@ export default function ChatInterface({ className }: ChatInterfaceProps) {
   } = useChat();
   
   const { currentSession } = useChatStore();
-  const { enableKnowledgeContext } = useChatSettingsStore();
+  const {} = useChatSettingStore();
 
   // 发送消息
   const handleSend = async () => {
     if (message.trim() && !isLoading) {
       try {
         await sendMessage(message, {
-          useKnowledgeContext: enableKnowledgeContext && selectedKnowledgeIds.length > 0,
+          useKnowledgeContext: selectedKnowledgeIds.length > 0,
           selectedKnowledgeIds: selectedKnowledgeIds,
-          enableThinking: false,
         });
         setMessage("");
       } catch (error) {
@@ -91,9 +90,8 @@ export default function ChatInterface({ className }: ChatInterfaceProps) {
     if (lastUserMessage) {
       try {
         await sendMessage(lastUserMessage.content, {
-          useKnowledgeContext: enableKnowledgeContext && selectedKnowledgeIds.length > 0,
+          useKnowledgeContext: selectedKnowledgeIds.length > 0,
           selectedKnowledgeIds: selectedKnowledgeIds,
-          enableThinking: false,
         });
       } catch (error) {
         console.error("重新生成失败:", error);
@@ -163,7 +161,7 @@ export default function ChatInterface({ className }: ChatInterfaceProps) {
               onSelectionChange={setSelectedKnowledgeIds}
             />
             <div className="text-xs text-muted-foreground">
-              {enableKnowledgeContext && selectedKnowledgeIds.length > 0
+              {selectedKnowledgeIds.length > 0
                 ? t("knowledge_context_enabled", "知识库上下文已启用 ({{count}} 项)", {
                     count: selectedKnowledgeIds.length,
                   })

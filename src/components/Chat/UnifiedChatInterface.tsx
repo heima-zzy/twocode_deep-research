@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { useChat } from "@/hooks/useChat";
 import { useChatStore } from "@/store/chat";
-import { useChatSettingsStore } from "@/store/chatSettings";
+import { useChatSettingStore } from "@/store/chatSetting";
 import ChatMessageList from "./ChatMessageList";
 import KnowledgeContextSelector from "./KnowledgeContextSelector";
 import { cn } from "@/utils/style";
@@ -39,7 +39,7 @@ export default function UnifiedChatInterface() {
   } = useChat();
   
   const { currentSession } = useChatStore();
-  const { enableKnowledgeContext } = useChatSettingsStore();
+  const {} = useChatSettingStore();
 
   // 判断是否有聊天消息
   const hasMessages = currentSession?.messages && currentSession.messages.length > 0;
@@ -64,11 +64,12 @@ export default function UnifiedChatInterface() {
         }
         
         await sendMessage(message, {
-          useKnowledgeContext: enableKnowledgeContext && selectedKnowledgeIds.length > 0,
+          useKnowledgeContext: selectedKnowledgeIds.length > 0,
           selectedKnowledgeIds: selectedKnowledgeIds,
-          enableThinking: false,
         });
         setMessage("");
+        // 发送成功后重置过渡状态
+        setIsTransitioning(false);
       } catch (error) {
         console.error("发送消息失败:", error);
         toast.error(t("send_message_failed", "发送消息失败"));
@@ -123,9 +124,8 @@ export default function UnifiedChatInterface() {
     if (lastUserMessage) {
       try {
         await sendMessage(lastUserMessage.content, {
-          useKnowledgeContext: enableKnowledgeContext && selectedKnowledgeIds.length > 0,
+          useKnowledgeContext: selectedKnowledgeIds.length > 0,
           selectedKnowledgeIds: selectedKnowledgeIds,
-          enableThinking: false,
         });
       } catch (error) {
         console.error("重新生成失败:", error);
@@ -333,7 +333,7 @@ export default function UnifiedChatInterface() {
                 onSelectionChange={setSelectedKnowledgeIds}
               />
               <div className="text-xs text-muted-foreground">
-                {enableKnowledgeContext && selectedKnowledgeIds.length > 0
+                {selectedKnowledgeIds.length > 0
                   ? t("knowledge_context_enabled", "知识库上下文已启用 ({{count}} 项)", {
                       count: selectedKnowledgeIds.length,
                     })
@@ -371,7 +371,7 @@ export default function UnifiedChatInterface() {
                     onSelectionChange={setSelectedKnowledgeIds}
                   />
                   <div className="text-xs text-muted-foreground">
-                    {enableKnowledgeContext && selectedKnowledgeIds.length > 0
+                    {selectedKnowledgeIds.length > 0
                       ? t("knowledge_context_enabled", "知识库上下文已启用 ({{count}} 项)", {
                           count: selectedKnowledgeIds.length,
                         })

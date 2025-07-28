@@ -2,10 +2,9 @@
 
 import { useState, useCallback, useRef } from "react";
 import { useChatStore } from "@/store/chat";
-import { useChatSettingsStore } from "@/store/chatSettings";
+import { useChatSettingStore } from "@/store/chatSetting";
 import { useKnowledgeStore } from "@/store/knowledge";
 import { streamText, generateText, smoothStream } from "ai";
-import { ThinkTagStreamProcessor } from "@/utils/text";
 import { toast } from "sonner";
 import { parseError } from "@/utils/error";
 import {
@@ -27,7 +26,6 @@ export interface UseChatReturn {
   isLoading: boolean;
   isGenerating: boolean;
   isStreaming: boolean;
-  isThinking: boolean;
   streamingContent: string;
   error: string | null;
   currentMessage: string;
@@ -54,7 +52,6 @@ interface SendMessageOptions {
   selectedKnowledgeIds?: string[]; // 选中的知识库ID列表
   customSystemPrompt?: string;
   temperature?: number;
-  enableThinking?: boolean; // 是否启用思考模式
   smoothStreamType?: "character" | "word" | "line"; // 流式文本平滑类型
 }
 
@@ -89,15 +86,13 @@ export function useChat(): UseChatReturn {
   const [isGenerating, setIsGenerating] = useState(false);
   // 流式处理状态
   const [isStreaming, setIsStreaming] = useState(false);
-  // 思考模式状态
-  const [isThinking, setIsThinking] = useState(false);
   // 当前流式内容
   const [streamingContent, setStreamingContent] = useState("");
   const abortControllerRef = useRef<AbortController | null>(null);
   
   // Store hooks
   const chatStore = useChatStore();
-  const chatSettings = useChatSettingsStore();
+  const chatSettings = useChatSettingStore();
   const knowledgeStore = useKnowledgeStore();
   
   // 创建聊天专用的AI提供者
@@ -236,7 +231,7 @@ export function useChat(): UseChatReturn {
   const buildSystemPrompt = useCallback((customPrompt?: string, useKnowledge = false, selectedKnowledgeIds?: string[]) => {
     let systemPrompt = customPrompt || chatSettings.systemPrompt;
     
-    if (useKnowledge && chatSettings.enableKnowledgeContext) {
+    if (useKnowledge) {
       let knowledgeItems = knowledgeStore.knowledges;
       
       // 如果指定了选中的知识库ID，则只使用这些知识库
@@ -265,7 +260,7 @@ export function useChat(): UseChatReturn {
     }
     
     return systemPrompt;
-  }, [chatSettings.systemPrompt, chatSettings.enableKnowledgeContext, knowledgeStore]);
+  }, [chatSettings.systemPrompt, knowledgeStore]);
   
   // 发送消息
   const sendMessage = useCallback(async (
@@ -277,7 +272,6 @@ export function useChat(): UseChatReturn {
     try {
       setIsGenerating(true);
       setIsStreaming(chatSettings.enableStreaming);
-      setIsThinking(options.enableThinking || false);
       setStreamingContent("");
       chatStore.setLoading(true);
       chatStore.setError(null);
@@ -287,15 +281,13 @@ export function useChat(): UseChatReturn {
         chatStore.createSession();
       }
       
-      // 添加用户消息
-      const userMessageId = chatStore.addMessage({
-        type: "user",
-        content,
-      });
+      // 先不添加用户消息，等AI响应开始后再添加
+      let userMessageId: string | null = null;
       
       // 准备AI提供者配置
-      const provider = chatStore.currentSession?.settings.provider || chatSettings.provider;
-      const model = chatStore.currentSession?.settings.model || chatSettings.model;
+      // 始终使用最新的聊天设置，而不是会话中保存的设置
+      const provider = chatSettings.provider;
+      const model = chatSettings.model;
       const temperature = options.temperature ?? chatSettings.temperature;
       
       const apiKey = chatSettings.getApiKey(provider);
@@ -336,7 +328,18 @@ export function useChat(): UseChatReturn {
             role: msg.type === "user" ? "user" as const : "assistant" as const,
             content: msg.content,
           })),
+        // 添加用户当前输入的消息
+        {
+          role: "user" as const,
+          content: content.trim(),
+        },
       ];
+      
+      // 确保messages数组至少包含系统消息和用户消息
+      if (messages.length < 2) {
+        console.error('Messages array is too short:', messages);
+        throw new Error('消息构建失败：缺少必要的消息内容');
+      }
       
       // 创建中止控制器
       abortControllerRef.current = new AbortController();
@@ -358,88 +361,42 @@ export function useChat(): UseChatReturn {
         };
         
         // 添加流式文本平滑处理
-        const smoothType = options.smoothStreamType || "character";
+        const smoothType = options.smoothStreamType || chatSettings.smoothStreamType;
         streamConfig.experimental_transform = smoothTextStream(smoothType);
         
         const result = await streamText(streamConfig);
         
         let fullContent = "";
-        let reasoning = "";
         
-        // 如果启用思考模式，使用ThinkTagStreamProcessor
-        if (options.enableThinking) {
-          const thinkTagProcessor = new ThinkTagStreamProcessor();
-          
-          // 处理完整流，包括文本增量和推理
-          for await (const part of result.fullStream) {
-            if (abortControllerRef.current?.signal.aborted) {
-              break;
-            }
-            
-            if (part.type === "text-delta") {
-              // 使用ThinkTagStreamProcessor处理文本块
-              thinkTagProcessor.processChunk(
-                 part.textDelta,
-                 (data) => {
-                   // 如果还没有创建助手消息，现在创建
-                   if (assistantMessageId === null) {
-                     assistantMessageId = chatStore.addMessage({
-                       type: "assistant",
-                       content: "",
-                       metadata: {
-                         model,
-                         tokens: 0,
-                         duration: 0,
-                       },
-                     });
-                   }
-                   fullContent += data;
-                   setStreamingContent(fullContent);
-                   chatStore.updateMessage(assistantMessageId, fullContent);
-                 },
-                 (data) => {
-                   reasoning += data;
-                   // 可以选择是否显示思考过程
-                   console.log("思考过程:", data);
-                 }
-               );
-            } else if (part.type === "reasoning") {
-              reasoning += part.textDelta;
-              console.log("推理过程:", part.textDelta);
-            }
+        // 标准流式处理
+        for await (const delta of result.textStream) {
+          if (abortControllerRef.current?.signal.aborted) {
+            break;
           }
           
-          // 输出完整的推理过程
-          if (reasoning) {
-            console.log("完整推理过程:", reasoning);
+          // 如果还没有添加用户消息，现在添加
+          if (userMessageId === null) {
+            userMessageId = chatStore.addMessage({
+              type: "user",
+              content,
+            });
+          }
+          // 如果还没有创建助手消息，现在创建
+          if (assistantMessageId === null) {
+            assistantMessageId = chatStore.addMessage({
+              type: "assistant",
+              content: "",
+              metadata: {
+                model,
+                tokens: 0,
+                duration: 0,
+              },
+            });
           }
           
-          // 重置处理器
-          thinkTagProcessor.end();
-        } else {
-          // 标准流式处理
-           for await (const delta of result.textStream) {
-             if (abortControllerRef.current?.signal.aborted) {
-               break;
-             }
-             
-             // 如果还没有创建助手消息，现在创建
-             if (assistantMessageId === null) {
-               assistantMessageId = chatStore.addMessage({
-                 type: "assistant",
-                 content: "",
-                 metadata: {
-                   model,
-                   tokens: 0,
-                   duration: 0,
-                 },
-               });
-             }
-             
-             fullContent += delta;
-             setStreamingContent(fullContent);
-             chatStore.updateMessage(assistantMessageId, fullContent);
-           }
+          fullContent += delta;
+          setStreamingContent(fullContent);
+          chatStore.updateMessage(assistantMessageId, fullContent);
         }
         
         // 更新最终元数据
@@ -461,6 +418,14 @@ export function useChat(): UseChatReturn {
           abortSignal: abortControllerRef.current.signal,
         });
         
+        // 添加用户消息
+        if (userMessageId === null) {
+          userMessageId = chatStore.addMessage({
+            type: "user",
+            content,
+          });
+        }
+        
         // 只有在有文本内容时才添加助手消息
         if (text && text.trim()) {
           assistantMessageId = chatStore.addMessage({
@@ -478,6 +443,11 @@ export function useChat(): UseChatReturn {
     } catch (error: any) {
       console.error("发送消息失败:", error);
       
+      // 如果用户消息已经添加但AI响应失败，删除用户消息避免重复
+      if (userMessageId !== null && error.name !== "AbortError") {
+        chatStore.deleteMessage(userMessageId);
+      }
+      
       if (error.name === "AbortError") {
         chatStore.setError("消息生成已停止");
       } else {
@@ -492,7 +462,6 @@ export function useChat(): UseChatReturn {
     } finally {
       setIsGenerating(false);
       setIsStreaming(false);
-      setIsThinking(false);
       setStreamingContent("");
       chatStore.setLoading(false);
       abortControllerRef.current = null;
@@ -514,7 +483,6 @@ export function useChat(): UseChatReturn {
     }
     setIsGenerating(false);
     setIsStreaming(false);
-    setIsThinking(false);
     setStreamingContent("");
     chatStore.setLoading(false);
   }, [chatStore]);
@@ -524,7 +492,6 @@ export function useChat(): UseChatReturn {
     isLoading: chatStore.isLoading || isGenerating,
     isGenerating,
     isStreaming,
-    isThinking,
     streamingContent,
     error: chatStore.error,
     currentMessage: chatStore.currentMessage,

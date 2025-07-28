@@ -7,7 +7,7 @@ import { Send, Search, Settings, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useChat } from "@/hooks/useChat";
 import KnowledgeContextSelector from "./KnowledgeContextSelector";
-import { useChatSettingsStore } from "@/store/chatSettings";
+import { useChatSettingStore } from "@/store/chatSetting";
 
 export default function WelcomeSection() {
   const { t } = useTranslation();
@@ -15,15 +15,14 @@ export default function WelcomeSection() {
   const [selectedKnowledgeIds, setSelectedKnowledgeIds] = useState<string[]>([]);
   
   const { sendMessage, isLoading } = useChat();
-  const { enableKnowledgeContext } = useChatSettingsStore();
+  const {} = useChatSettingStore();
 
   const handleSend = async () => {
     if (message.trim() && !isLoading) {
       try {
         await sendMessage(message, {
-          useKnowledgeContext: enableKnowledgeContext && selectedKnowledgeIds.length > 0,
+          useKnowledgeContext: selectedKnowledgeIds.length > 0,
           selectedKnowledgeIds: selectedKnowledgeIds,
-          enableThinking: false,
         });
         setMessage("");
       } catch (error) {
@@ -62,7 +61,7 @@ export default function WelcomeSection() {
                 onSelectionChange={setSelectedKnowledgeIds}
               />
               <div className="text-xs text-muted-foreground">
-                {enableKnowledgeContext && selectedKnowledgeIds.length > 0
+                {selectedKnowledgeIds.length > 0
                   ? t("knowledge_context_enabled", "知识库上下文已启用 ({{count}} 项)", {
                       count: selectedKnowledgeIds.length,
                     })

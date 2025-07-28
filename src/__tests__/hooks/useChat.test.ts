@@ -75,7 +75,7 @@ describe('useChat Hook', () => {
     apiKey: '',
     apiProxy: '',
     enableStreaming: true,
-    enableKnowledgeContext: true,
+
     systemPrompt: '你是一个智能助手',
     updateSettings: vi.fn(),
     resetSettings: vi.fn(),
@@ -223,7 +223,6 @@ describe('useChat Hook', () => {
     
     await act(async () => {
       await result.current.sendMessage("测试消息", {
-        enableThinking: true,
         smoothStreamType: "word"
       });
     });
@@ -247,9 +246,7 @@ describe('useChat Hook', () => {
     };
     
     await act(async () => {
-      await result.current.sendMessage("测试消息", {
-        enableThinking: true
-      });
+      await result.current.sendMessage("测试消息");
     });
     
     // 验证消息被添加

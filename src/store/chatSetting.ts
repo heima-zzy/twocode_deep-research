@@ -2,105 +2,134 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 // 聊天AI配置接口
-export interface ChatSettingsStore {
+export interface ChatSettingStore {
   // AI提供者配置
   provider: string;
+  mode: string;
   model: string;
-  temperature: number;
-  maxTokens: number;
-  
-  // API配置
-  apiKey: string;
-  apiProxy: string;
-  
-  // 各提供者的API密钥和代理配置
   googleApiKey: string;
   googleApiProxy: string;
+  
+  // 聊天参数
+  temperature: number;
+  maxTokens: number;
+  systemPrompt: string;
+  enableStreaming: boolean;
+  smoothStreamType: "character" | "word" | "line";
+  
+  // 各提供者的API密钥和代理配置
+  openRouterApiKey: string;
+  openRouterApiProxy: string;
+  openRouterThinkingModel: string;
+  openRouterNetworkingModel: string;
   openAIApiKey: string;
   openAIApiProxy: string;
+  openAIThinkingModel: string;
+  openAINetworkingModel: string;
   anthropicApiKey: string;
   anthropicApiProxy: string;
+  anthropicThinkingModel: string;
+  anthropicNetworkingModel: string;
   deepseekApiKey: string;
   deepseekApiProxy: string;
+  deepseekThinkingModel: string;
+  deepseekNetworkingModel: string;
   xAIApiKey: string;
   xAIApiProxy: string;
+  xAIThinkingModel: string;
+  xAINetworkingModel: string;
   mistralApiKey: string;
   mistralApiProxy: string;
+  mistralThinkingModel: string;
+  mistralNetworkingModel: string;
   azureApiKey: string;
   azureResourceName: string;
   azureApiVersion: string;
-  openRouterApiKey: string;
-  openRouterApiProxy: string;
+  azureThinkingModel: string;
+  azureNetworkingModel: string;
   openAICompatibleApiKey: string;
   openAICompatibleApiProxy: string;
+  openAICompatibleThinkingModel: string;
+  openAICompatibleNetworkingModel: string;
   pollinationsApiProxy: string;
+  pollinationsThinkingModel: string;
+  pollinationsNetworkingModel: string;
   ollamaApiProxy: string;
-  
-  // 聊天特定配置
-  enableStreaming: boolean;
-  enableKnowledgeContext: boolean;
-  systemPrompt: string;
+  ollamaThinkingModel: string;
+  ollamaNetworkingModel: string;
+  accessPassword: string;
+  thinkingModel: string;
+  networkingModel: string;
 }
 
-// 聊天设置功能接口
-interface ChatSettingsFunction {
-  updateSettings: (values: Partial<ChatSettingsStore>) => void;
-  resetSettings: () => void;
+interface ChatSettingFunction {
+  update: (values: Partial<ChatSettingStore>) => void;
+  reset: () => void;
   getApiKey: (provider: string) => string;
   getApiProxy: (provider: string) => string;
 }
 
-// 默认配置
-const defaultChatSettings: ChatSettingsStore = {
+export const defaultChatValues: ChatSettingStore = {
   provider: "google",
-  // model: "gemini-2.5-flash-lite",
-  model: "gemini-2.5-flash-lite",
-  temperature: 0.7,
-  maxTokens: 2048,
-  
-  apiKey: "",
-  apiProxy: "",
-  
-  googleApiKey: "AIzaSyAUQLWSy8pfGQV1mDZRoScRGOAr_KzFUP4",
+  mode: "",
+  model: "gemini-2.0-flash",
+  googleApiKey: "",
   googleApiProxy: "",
+  temperature: 0.7,
+  maxTokens: 4000,
+  systemPrompt: "你是一个有用的AI助手。",
+  enableStreaming: true,
+  smoothStreamType: "word",
+  thinkingModel: "gemini-2.0-flash-thinking-exp",
+  networkingModel: "gemini-2.0-flash",
+  openRouterApiKey: "",
+  openRouterApiProxy: "",
+  openRouterThinkingModel: "",
+  openRouterNetworkingModel: "",
   openAIApiKey: "",
   openAIApiProxy: "",
+  openAIThinkingModel: "gpt-4o",
+  openAINetworkingModel: "gpt-4o-mini",
   anthropicApiKey: "",
   anthropicApiProxy: "",
+  anthropicThinkingModel: "",
+  anthropicNetworkingModel: "",
   deepseekApiKey: "",
   deepseekApiProxy: "",
+  deepseekThinkingModel: "deepseek-reasoner",
+  deepseekNetworkingModel: "deepseek-chat",
   xAIApiKey: "",
   xAIApiProxy: "",
+  xAIThinkingModel: "",
+  xAINetworkingModel: "",
   mistralApiKey: "",
   mistralApiProxy: "",
+  mistralThinkingModel: "mistral-large-latest",
+  mistralNetworkingModel: "mistral-medium-latest",
   azureApiKey: "",
   azureResourceName: "",
   azureApiVersion: "",
-  openRouterApiKey: "",
-  openRouterApiProxy: "",
+  azureThinkingModel: "",
+  azureNetworkingModel: "",
   openAICompatibleApiKey: "",
   openAICompatibleApiProxy: "",
+  openAICompatibleThinkingModel: "",
+  openAICompatibleNetworkingModel: "",
   pollinationsApiProxy: "",
+  pollinationsThinkingModel: "",
+  pollinationsNetworkingModel: "",
   ollamaApiProxy: "",
-  
-  enableStreaming: true,
-  enableKnowledgeContext: true,
-  systemPrompt: "你是一个智能助手，请根据用户的问题提供准确、有用的回答。",
+  ollamaThinkingModel: "",
+  ollamaNetworkingModel: "",
+  accessPassword: "",
 };
 
-// 创建聊天设置store
-export const useChatSettingsStore = create(
-  persist<ChatSettingsStore & ChatSettingsFunction>(
+export const useChatSettingStore = create(
+  persist<ChatSettingStore & ChatSettingFunction>(
     (set, get) => ({
-      ...defaultChatSettings,
-      
-      // 更新设置
-      updateSettings: (values) => set(values),
-      
-      // 重置设置
-      resetSettings: () => set(defaultChatSettings),
-      
-      // 获取指定提供者的API密钥
+      ...defaultChatValues,
+      update: (values) => set(values),
+      reset: () => set(defaultChatValues),
       getApiKey: (provider: string) => {
         const state = get();
         switch (provider) {
@@ -116,21 +145,18 @@ export const useChatSettingsStore = create(
             return state.xAIApiKey;
           case "mistral":
             return state.mistralApiKey;
-          case "azure":
-            return state.azureApiKey;
           case "openrouter":
             return state.openRouterApiKey;
           case "openaicompatible":
             return state.openAICompatibleApiKey;
           case "pollinations":
+            return ""; // Pollinations不需要API密钥
           case "ollama":
-            return "";
+            return ""; // Ollama不需要API密钥
           default:
-            return state.apiKey;
+            return "";
         }
       },
-      
-      // 获取指定提供者的API代理
       getApiProxy: (provider: string) => {
         const state = get();
         switch (provider) {
@@ -155,12 +181,10 @@ export const useChatSettingsStore = create(
           case "ollama":
             return state.ollamaApiProxy;
           default:
-            return state.apiProxy;
+            return "";
         }
       },
     }),
-    {
-      name: "chatSettings",
-    }
+    { name: "chatSetting" }
   )
 );

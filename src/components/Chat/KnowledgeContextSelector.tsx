@@ -2,7 +2,7 @@
 import { useState, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useKnowledgeStore } from "@/store/knowledge";
-import { useChatSettingsStore } from "@/store/chatSettings";
+import { useChatSettingStore } from "@/store/chatSetting";
 import {
   Dialog,
   DialogContent,
@@ -42,7 +42,7 @@ export default function KnowledgeContextSelector({
 }: KnowledgeContextSelectorProps) {
   const { t } = useTranslation();
   const { knowledges } = useKnowledgeStore();
-  const { enableKnowledgeContext, updateSettings } = useChatSettingsStore();
+  const { } = useChatSettingStore();
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -91,10 +91,7 @@ export default function KnowledgeContextSelector({
     onSelectionChange([]);
   }, [onSelectionChange]);
 
-  // 切换知识库上下文功能
-  const handleToggleKnowledgeContext = useCallback(() => {
-    updateSettings({ enableKnowledgeContext: !enableKnowledgeContext });
-  }, [enableKnowledgeContext, updateSettings]);
+
 
   // 获取选中的知识库信息
   const selectedKnowledges = useMemo(() => {
@@ -142,27 +139,6 @@ export default function KnowledgeContextSelector({
         </DialogHeader>
 
         <div className="flex flex-col gap-4 flex-1 min-h-0">
-          {/* 功能开关 */}
-          <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-            <div className="flex items-center gap-2">
-              <Checkbox
-                id="enable-knowledge-context"
-                checked={enableKnowledgeContext}
-                onCheckedChange={handleToggleKnowledgeContext}
-              />
-              <label
-                htmlFor="enable-knowledge-context"
-                className="text-sm font-medium cursor-pointer"
-              >
-                {t("enable_knowledge_context", "启用知识库上下文")}
-              </label>
-            </div>
-            <Badge variant={enableKnowledgeContext ? "default" : "secondary"}>
-              {enableKnowledgeContext
-                ? t("enabled", "已启用")
-                : t("disabled", "已禁用")}
-            </Badge>
-          </div>
 
           {/* 搜索框 */}
           <div className="relative">
@@ -182,7 +158,7 @@ export default function KnowledgeContextSelector({
                 variant="outline"
                 size="sm"
                 onClick={handleSelectAll}
-                disabled={!enableKnowledgeContext || filteredKnowledges.length === 0}
+                disabled={filteredKnowledges.length === 0}
               >
                 {selectedKnowledgeIds.length === filteredKnowledges.length
                   ? t("deselect_all", "取消全选")
@@ -192,7 +168,7 @@ export default function KnowledgeContextSelector({
                 variant="outline"
                 size="sm"
                 onClick={handleClearSelection}
-                disabled={!enableKnowledgeContext || selectedKnowledgeIds.length === 0}
+                disabled={selectedKnowledgeIds.length === 0}
               >
                 <X className="w-4 h-4 mr-1" />
                 {t("clear_selection", "清除选择")}
@@ -255,17 +231,14 @@ export default function KnowledgeContextSelector({
                         isSelected
                           ? "border-primary bg-primary/5"
                           : "border-border hover:bg-muted/50",
-                        !enableKnowledgeContext && "opacity-50 cursor-not-allowed"
+
                       )}
                       onClick={() => {
-                        if (enableKnowledgeContext) {
-                          handleKnowledgeToggle(knowledge.id, !isSelected);
-                        }
+                        handleKnowledgeToggle(knowledge.id, !isSelected);
                       }}
                     >
                       <Checkbox
                         checked={isSelected}
-                        disabled={!enableKnowledgeContext}
                         onCheckedChange={(checked) =>
                           handleKnowledgeToggle(knowledge.id, checked as boolean)
                         }

@@ -114,6 +114,11 @@ export default function ChatMessageList({
           const isUser = message.type === "user";
           const isError = message.type === "error";
           const isLast = index === messages.length - 1;
+          
+          // 如果正在流式显示且这是最后一条助手消息，跳过显示（避免重复显示）
+          if (isStreaming && streamingContent && isLast && !isUser && !isError) {
+            return null;
+          }
 
           return (
             <div

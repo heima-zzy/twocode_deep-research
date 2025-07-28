@@ -107,20 +107,33 @@ interface OllamaModel {
   };
 }
 
-function useModelList() {
+function useModelList(useStore?: 'chat' | 'setting') {
   const [modelList, setModelList] = useState<string[]>([]);
-  const { mode, provider } = useSettingStore.getState();
+  const storeType = useStore || 'setting';
+  
+  // 根据传入的参数选择使用哪个store
+  const getStoreState = () => {
+    if (storeType === 'chat') {
+      const { useChatSettingStore } = require('@/store/chatSetting');
+      return useChatSettingStore.getState();
+    } else {
+      return useSettingStore.getState();
+    }
+  };
+  
+  const { mode, provider } = getStoreState();
 
   useEffect(() => {
     setModelList([]);
   }, [provider]);
 
   async function refresh(provider: string): Promise<string[]> {
-    const { accessPassword } = useSettingStore.getState();
+    const storeState = getStoreState();
+    const accessPassword = storeState.accessPassword;
     const accessKey = generateSignature(accessPassword, Date.now());
 
     if (provider === "google") {
-      const { apiKey = "", apiProxy } = useSettingStore.getState();
+      const { googleApiKey: apiKey = "", googleApiProxy: apiProxy } = storeState;
       if (mode === "local" && !apiKey) {
         return [];
       }
@@ -146,8 +159,7 @@ function useModelList() {
       setModelList(newModelList);
       return newModelList;
     } else if (provider === "openrouter") {
-      const { openRouterApiKey = "", openRouterApiProxy } =
-        useSettingStore.getState();
+      const { openRouterApiKey = "", openRouterApiProxy } = storeState;
       if (mode === "local" && !openRouterApiKey) {
         return [];
       }
@@ -168,7 +180,7 @@ function useModelList() {
       setModelList(newModelList);
       return newModelList;
     } else if (provider === "openai") {
-      const { openAIApiKey = "", openAIApiProxy } = useSettingStore.getState();
+      const { openAIApiKey = "", openAIApiProxy } = storeState;
       if (mode === "local" && !openAIApiKey) {
         return [];
       }
@@ -198,8 +210,7 @@ function useModelList() {
       setModelList(newModelList);
       return newModelList;
     } else if (provider === "anthropic") {
-      const { anthropicApiKey = "", anthropicApiProxy } =
-        useSettingStore.getState();
+      const { anthropicApiKey = "", anthropicApiProxy } = storeState;
       if (mode === "local" && !anthropicApiKey) {
         return [];
       }
@@ -224,8 +235,7 @@ function useModelList() {
       setModelList(newModelList);
       return newModelList;
     } else if (provider === "deepseek") {
-      const { deepseekApiKey = "", deepseekApiProxy } =
-        useSettingStore.getState();
+      const { deepseekApiKey = "", deepseekApiProxy } = storeState;
       if (mode === "local" && !deepseekApiKey) {
         return [];
       }
@@ -246,7 +256,7 @@ function useModelList() {
       setModelList(newModelList);
       return newModelList;
     } else if (provider === "xai") {
-      const { xAIApiKey = "", xAIApiProxy } = useSettingStore.getState();
+      const { xAIApiKey = "", xAIApiProxy } = storeState;
       if (mode === "local" && !xAIApiKey) {
         return [];
       }
@@ -268,8 +278,7 @@ function useModelList() {
       setModelList(newModelList);
       return newModelList;
     } else if (provider === "mistral") {
-      const { mistralApiKey = "", mistralApiProxy } =
-        useSettingStore.getState();
+      const { mistralApiKey = "", mistralApiProxy } = storeState;
       if (mode === "local" && !mistralApiKey) {
         return [];
       }
@@ -291,8 +300,7 @@ function useModelList() {
       setModelList(newModelList);
       return newModelList;
     } else if (provider === "openaicompatible") {
-      const { openAICompatibleApiKey = "", openAICompatibleApiProxy } =
-        useSettingStore.getState();
+      const { openAICompatibleApiKey = "", openAICompatibleApiProxy } = storeState;
       if (mode === "local" && !openAICompatibleApiKey) {
         return [];
       }
@@ -312,7 +320,7 @@ function useModelList() {
       setModelList(newModelList);
       return newModelList;
     } else if (provider === "pollinations") {
-      const { pollinationsApiProxy } = useSettingStore.getState();
+      const { pollinationsApiProxy } = storeState;
       const headers = new Headers();
       if (mode === "proxy") headers.set("Authorization", `Bearer ${accessKey}`);
       const response = await fetch(
@@ -331,7 +339,7 @@ function useModelList() {
       setModelList(newModelList);
       return newModelList;
     } else if (provider === "ollama") {
-      const { ollamaApiProxy } = useSettingStore.getState();
+      const { ollamaApiProxy } = storeState;
       const headers = new Headers();
       if (mode === "proxy") headers.set("Authorization", `Bearer ${accessKey}`);
       const response = await fetch(
@@ -356,4 +364,5 @@ function useModelList() {
   };
 }
 
+export { useModelList };
 export default useModelList;

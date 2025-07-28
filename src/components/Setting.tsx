@@ -49,7 +49,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import useModel from "@/hooks/useModelList";
+import { useModelList } from "@/hooks/useModelList";
 import { useSettingStore } from "@/store/setting";
 import {
   GEMINI_BASE_URL,
@@ -212,7 +212,7 @@ function HelpTip({ children, tip }: { children: ReactNode; tip: string }) {
 function Setting({ open, onClose }: SettingProps) {
   const { t } = useTranslation();
   const { mode, provider, searchProvider, update } = useSettingStore();
-  const { modelList, refresh } = useModel();
+  const { modelList, refresh } = useModelList();
   const pwaInstall = usePWAInstall();
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
 

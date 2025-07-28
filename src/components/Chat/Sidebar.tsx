@@ -6,6 +6,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import NewChatButton from "./NewChatButton";
 import ChatHistoryList from "./ChatHistoryList";
+import ChatSetting from "@/components/ChatSetting";
 import Link from "next/link";
 import {
   MessageSquarePlus,
@@ -19,14 +20,19 @@ import {
 export default function Sidebar() {
   const { t } = useTranslation();
   const {
-    setOpenSetting,
+    openChatSetting,
+    setOpenChatSetting,
     setOpenHistory,
     setOpenKnowledge,
     setSidebarOpen,
   } = useGlobalStore();
 
-  const handleOpenSetting = () => {
-    setOpenSetting(true);
+  const handleOpenChatSetting = () => {
+    setOpenChatSetting(true);
+  };
+
+  const handleCloseChatSetting = () => {
+    setOpenChatSetting(false);
   };
 
   const handleOpenHistory = () => {
@@ -128,12 +134,18 @@ export default function Sidebar() {
           variant="ghost"
           size="sm"
           className="w-full justify-start"
-          onClick={handleOpenSetting}
+          onClick={handleOpenChatSetting}
         >
           <Settings className="w-4 h-4 mr-2" />
-          {t("settings", "设置")}
+          {t("chat_settings", "聊天设置")}
         </Button>
       </div>
+      
+      {/* 聊天设置对话框 */}
+      <ChatSetting 
+        open={openChatSetting} 
+        onClose={handleCloseChatSetting} 
+      />
     </div>
   );
 }

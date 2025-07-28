@@ -95,7 +95,7 @@ describe('useChat 流式处理测试', () => {
     apiKey: '',
     apiProxy: '',
     enableStreaming: true,
-    enableKnowledgeContext: true,
+
     systemPrompt: '你是一个智能助手',
     updateSettings: vi.fn(),
     resetSettings: vi.fn(),
@@ -210,9 +210,7 @@ describe('useChat 流式处理测试', () => {
       vi.mocked(streamText).mockResolvedValue(mockTextStream as any);
 
       await act(async () => {
-        await result.current.sendMessage('测试消息', {
-          enableThinking: true
-        });
+        await result.current.sendMessage('测试消息');
       });
 
       expect(ThinkTagStreamProcessor).toHaveBeenCalled();
@@ -253,9 +251,7 @@ describe('useChat 流式处理测试', () => {
       vi.mocked(streamText).mockResolvedValue(mockTextStream as any);
 
       await act(async () => {
-        await result.current.sendMessage('测试消息', {
-          enableThinking: true
-        });
+        await result.current.sendMessage('测试消息');
       });
 
       expect(mockProcessor.processChunk).toHaveBeenCalledTimes(2);

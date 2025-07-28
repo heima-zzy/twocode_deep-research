@@ -3,7 +3,7 @@ import { persist, type StorageValue } from "zustand/middleware";
 import { researchStore } from "@/utils/storage";
 import { customAlphabet } from "nanoid";
 import { clone, pick } from "radash";
-import { useChatSettingsStore } from "@/store/chatSettings";
+import { useChatSettingStore } from "@/store/chatSetting";
 
 // 聊天状态接口
 export interface ChatStore {
@@ -159,7 +159,7 @@ persist<ChatStore & ChatFunction>(
         // 获取当前时间戳
         const now = Date.now();
         // 获取当前聊天设置
-        const chatSettings = useChatSettingsStore.getState();
+        const chatSettings = useChatSettingStore.getState();
         // 创建新会话对象
         const newSession: ChatSession = {
           id,
@@ -215,14 +215,17 @@ persist<ChatStore & ChatFunction>(
       // 更新会话标题
       updateSessionTitle: (sessionId, title) => {
         const state = get();
+        // 限制标题长度为10个字符
+        const truncatedTitle = title.slice(0, 10) + (title.length > 10 ? '...' : '');
+        
         const newSessions = state.sessions.map(session => 
           session.id === sessionId 
-            ? { ...session, title, updatedAt: Date.now() }
+            ? { ...session, title: truncatedTitle, updatedAt: Date.now() }
             : session
         );
         
         const newCurrentSession = state.currentSession?.id === sessionId
-          ? { ...state.currentSession, title, updatedAt: Date.now() }
+          ? { ...state.currentSession, title: truncatedTitle, updatedAt: Date.now() }
           : state.currentSession;
         
         set({
@@ -259,7 +262,7 @@ persist<ChatStore & ChatFunction>(
         
         // 如果是第一条用户消息且会话标题是默认标题，使用消息内容作为会话标题
         if (currentSession.messages.length === 0 && message.type === 'user' && currentSession.title === '新对话') {
-          updatedSession.title = message.content.slice(0, 30) + (message.content.length > 30 ? '...' : '');
+          updatedSession.title = message.content.slice(0, 10) + (message.content.length > 10 ? '...' : '');
         }
         
         const newSessions = get().sessions.map(session => 

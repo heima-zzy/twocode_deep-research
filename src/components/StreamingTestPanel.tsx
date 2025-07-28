@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useChat } from '@/hooks/useChat';
-import { useChatSettingsStore } from '@/store/chatSettings';
+import { useChatSettingStore } from '@/store/chatSetting';
 
 /**
  * 流式对话功能测试面板
@@ -10,9 +10,9 @@ import { useChatSettingsStore } from '@/store/chatSettings';
  */
 const StreamingTestPanel: React.FC = () => {
   const chat = useChat();
-  const chatSettings = useChatSettingsStore();
+  const chatSettings = useChatSettingStore();
   const [testMessage, setTestMessage] = useState('');
-  const [enableThinking, setEnableThinking] = useState(false);
+
   const [smoothStreamType, setSmoothStreamType] = useState<'character' | 'word' | 'line'>('character');
   const [testResults, setTestResults] = useState<string[]>([]);
 
@@ -44,15 +44,14 @@ const StreamingTestPanel: React.FC = () => {
     setTestResults(prev => [...prev, `${new Date().toLocaleTimeString()}: ${result}`]);
   };
 
-  const handleSendMessage = async (message: string, options: { enableThinking?: boolean } = {}) => {
+  const handleSendMessage = async (message: string, options: {} = {}) => {
     if (!message.trim()) return;
 
-    addTestResult(`开始发送消息: "${message.substring(0, 50)}${message.length > 50 ? '...' : ''}"`);
-    addTestResult(`配置 - 流式处理: ${chatSettings.enableStreaming ? '启用' : '禁用'}, 思考模式: ${options.enableThinking ? '启用' : '禁用'}, 流式类型: ${smoothStreamType}`);
+    addTestResult(`开始发送消息: "${message.substring(0, 50)}${message.length > 50 ? '...' : ''}"`);    
+    addTestResult(`配置 - 流式处理: ${chatSettings.enableStreaming ? '启用' : '禁用'}, 流式类型: ${smoothStreamType}`);
 
     try {
       await chat.sendMessage(message, {
-        enableThinking: options.enableThinking,
         smoothStreamType: smoothStreamType
       });
       addTestResult('消息发送完成');
@@ -79,9 +78,9 @@ const StreamingTestPanel: React.FC = () => {
     // 等待一段时间
     await new Promise(resolve => setTimeout(resolve, 2000));
     
-    // 测试2: 思考模式
-    addTestResult('测试2: 思考模式');
-    await handleSendMessage('1+1等于几？请详细说明计算过程。', { enableThinking: true });
+    // 测试2: 复杂推理
+    addTestResult('测试2: 复杂推理');
+    await handleSendMessage('1+1等于几？请详细说明计算过程。');
     
     // 等待一段时间
     await new Promise(resolve => setTimeout(resolve, 2000));
@@ -103,7 +102,7 @@ const StreamingTestPanel: React.FC = () => {
         <h2 className="text-2xl font-bold mb-4 text-gray-800">流式对话功能测试面板</h2>
         
         {/* 状态显示 */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <div className={`p-3 rounded-lg text-center ${
             chat.isGenerating ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-600'
           }`}>
@@ -118,12 +117,7 @@ const StreamingTestPanel: React.FC = () => {
             <div>{chat.isStreaming ? '流式中' : '非流式'}</div>
           </div>
           
-          <div className={`p-3 rounded-lg text-center ${
-            chat.isThinking ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-600'
-          }`}>
-            <div className="font-semibold">思考状态</div>
-            <div>{chat.isThinking ? '思考中' : '非思考'}</div>
-          </div>
+
           
           <div className="p-3 rounded-lg text-center bg-green-100 text-green-800">
             <div className="font-semibold">内容长度</div>
@@ -135,7 +129,7 @@ const StreamingTestPanel: React.FC = () => {
         <div className="bg-gray-50 rounded-lg p-4 mb-6">
           <h3 className="text-lg font-semibold mb-3">测试设置</h3>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium mb-1">AI 提供者</label>
               <select
@@ -166,17 +160,7 @@ const StreamingTestPanel: React.FC = () => {
               </label>
             </div>
             
-            <div>
-              <label className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  checked={enableThinking}
-                  onChange={(e) => setEnableThinking(e.target.checked)}
-                  className="rounded"
-                />
-                <span>启用思考模式</span>
-              </label>
-            </div>
+
             
             <div>
               <label className="block text-sm font-medium mb-1">流式类型</label>
@@ -215,14 +199,14 @@ const StreamingTestPanel: React.FC = () => {
               className="flex-1 p-2 border rounded-md"
               onKeyPress={(e) => {
                 if (e.key === 'Enter') {
-                  handleSendMessage(testMessage, { enableThinking });
+                  handleSendMessage(testMessage);
                   setTestMessage('');
                 }
               }}
             />
             <button
               onClick={() => {
-                handleSendMessage(testMessage, { enableThinking });
+                handleSendMessage(testMessage);
                 setTestMessage('');
               }}
               disabled={!testMessage.trim() || chat.isGenerating}
@@ -250,9 +234,7 @@ const StreamingTestPanel: React.FC = () => {
                 <p className="text-sm text-gray-600 mb-2">{msg.description}</p>
                 <p className="text-sm text-gray-700 mb-3 line-clamp-2">{msg.content}</p>
                 <button
-                  onClick={() => handleSendMessage(msg.content, { 
-                    enableThinking: msg.name.includes('思考') || msg.name.includes('推理') 
-                  })}
+                  onClick={() => handleSendMessage(msg.content)}
                   disabled={chat.isGenerating}
                   className="w-full px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 disabled:bg-gray-300 text-sm"
                 >
