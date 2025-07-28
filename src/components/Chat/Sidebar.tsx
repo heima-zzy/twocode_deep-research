@@ -53,7 +53,7 @@ export default function Sidebar() {
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
               <MessageSquarePlus className="w-5 h-5 text-primary-foreground" />
             </div>
-            <h1 className="font-semibold text-lg">{t("app_name", "AI 助手")}</h1>
+            <h1 className="font-semibold text-lg">{t("app_name", "湖南电科院")}</h1>
           </div>
           
           {/* 桌面端折叠按钮 */}

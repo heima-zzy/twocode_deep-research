@@ -32,8 +32,8 @@ export const useGlobalStore = create<GlobalStore & GlobalFunction>((set) => ({
   openChatSetting: false,
   openHistory: false,
   openKnowledge: false,
-  // 侧边栏的开关状态，桌面端默认打开，移动端默认关闭
-  sidebarOpen: typeof window !== 'undefined' ? window.innerWidth >= 1024 : true,
+  // 侧边栏的开关状态，默认关闭以避免SSR水合错误
+  sidebarOpen: false,
   // 当前选中的聊天会话ID，默认为空
   currentChatId: null,
   chatHistoryOpen: false,

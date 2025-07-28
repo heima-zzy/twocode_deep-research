@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,6 +19,7 @@ export default function ChatHistoryList() {
   const { t } = useTranslation();
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
   const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
+  const [isHydrated, setIsHydrated] = useState(false);
   
   const {
     sessions,
@@ -29,7 +30,12 @@ export default function ChatHistoryList() {
     getSessionHistory,
   } = useChatStore();
 
-  const chatHistory = getSessionHistory();
+  // 确保水合完成后再获取聊天历史，避免水合错误
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
+
+  const chatHistory = isHydrated ? getSessionHistory() : [];
 
   const handleSelectChat = (sessionId: string) => {
     const success = loadSession(sessionId);
@@ -80,7 +86,7 @@ export default function ChatHistoryList() {
           {t("chat_history", "聊天历史")}
         </div>
         
-        {chatHistory.length === 0 ? (
+        {!isHydrated || chatHistory.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
             <MessageSquare className="w-8 h-8 mx-auto mb-2 opacity-50" />
             <p className="text-sm">{t("no_chat_history", "暂无聊天记录")}</p>

@@ -40,7 +40,7 @@ export default function MainContent({ children }: MainContentProps) {
           
           {/* 页面标题区域 */}
           <div className="flex items-center space-x-2">
-            <h2 className="text-lg font-semibold">AI 助手</h2>
+            <h2 className="text-lg font-semibold">湖南电科院</h2>
           </div>
         </div>
 

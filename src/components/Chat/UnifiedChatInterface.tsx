@@ -138,198 +138,176 @@ export default function UnifiedChatInterface() {
   const canRegenerate = hasMessages && !isLoading;
 
   return (
-    <div className="flex flex-col h-full relative overflow-hidden">
-      {/* 欢迎界面 - 使用绝对定位和动画 */}
-      <div
-        className={cn(
-          "absolute inset-0 flex flex-col items-center justify-center p-8 transition-all duration-700 ease-in-out",
-          isChatMode
-            ? "opacity-0 pointer-events-none transform translate-y-[-20px]"
-            : "opacity-100 pointer-events-auto transform translate-y-0"
-        )}
-      >
-        <div className="w-full max-w-4xl space-y-10 relative">
-          {/* 欢迎标题 */}
-          <div className="text-center space-y-6 pt-8">
-            <h1 className="text-5xl font-bold text-foreground">
-              {t("welcome_to_chat", "欢迎使用 AI 助手")}
-            </h1>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              {t("chat_description", "与 AI 进行智能对话，获取即时回答，或进行深度研究分析")}
-            </p>
-          </div>
-
-          {/* 示例问题 */}
-          <div className="text-center space-y-6">
-            <h3 className="text-xl font-semibold text-foreground">
-              {t("example_questions", "试试这些问题")}
-            </h3>
-            <div className="flex flex-wrap justify-center gap-3 max-w-4xl mx-auto">
-              {[
-                "如何提高工作效率？",
-                "解释一下人工智能的发展历程",
-                "推荐一些学习编程的方法",
-                "分析当前科技趋势"
-              ].map((question, index) => (
-                <button
-                  key={index}
-                  onClick={() => setMessage(question)}
-                  className="px-4 py-3 text-sm bg-white hover:bg-gray-50 border border-gray-300 rounded-xl transition-all duration-200 text-gray-700 hover:text-gray-900 font-medium shadow-sm hover:shadow-md"
-                >
-                  {question}
-                </button>
-              ))}
+    <div className="flex flex-col h-full bg-gray-50">
+      {/* 顶部标题栏 */}
+      <div className="flex-shrink-0 bg-white border-b border-gray-200 px-6 py-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+              <MessageSquare className="w-5 h-5 text-white" />
             </div>
-          </div>
-
-          {/* 功能说明 */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-5xl mx-auto">
-            <div className="p-8 bg-white border border-gray-200 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
-              <div className="flex items-center mb-4">
-                <div className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center mr-3">
-                  <MessageSquare className="w-5 h-5 text-white" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-800">{t("ai_chat", "AI 对话")}</h3>
-              </div>
-              <p className="text-gray-600 mb-6 leading-relaxed">
-                {t("ai_chat_desc", "与 AI 进行实时对话，获取即时回答和建议")}
+            <div>
+              <h1 className="text-xl font-semibold text-gray-900">
+                {t("welcome_to_chat", "电力行业情报分析助手")}
+              </h1>
+              <p className="text-sm text-gray-500">
+                {t("chat_description", "专为湖南电科院打造的智能分析工具")}
               </p>
-              <div className="space-y-3">
-                <p className="text-sm font-semibold text-gray-800">💡 试试这些提示词：</p>
-                <div className="space-y-2">
-                  <p 
-                    className="text-sm text-gray-600 bg-gray-50 px-3 py-2 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handlePromptClick("请帮我制定一个学习计划，我想在3个月内掌握Python编程")}
-                  >
-                    • "请帮我制定一个学习计划，我想在3个月内掌握Python编程"
-                  </p>
-                  <p 
-                    className="text-sm text-blue-600 bg-white/50 px-3 py-2 rounded-lg cursor-pointer hover:bg-white/70 transition-colors"
-                    onClick={() => handlePromptClick("分析一下这段代码的性能问题并给出优化建议")}
-                  >
-                    • "分析一下这段代码的性能问题并给出优化建议"
-                  </p>
-                  <p 
-                    className="text-sm text-blue-600 bg-white/50 px-3 py-2 rounded-lg cursor-pointer hover:bg-white/70 transition-colors"
-                    onClick={() => handlePromptClick("解释一下机器学习中的过拟合现象，并提供解决方案")}
-                  >
-                    • "解释一下机器学习中的过拟合现象，并提供解决方案"
-                  </p>
-                  <p 
-                    className="text-sm text-blue-600 bg-white/50 px-3 py-2 rounded-lg cursor-pointer hover:bg-white/70 transition-colors"
-                    onClick={() => handlePromptClick("帮我写一份项目提案，主题是智能家居系统")}
-                  >
-                    • "帮我写一份项目提案，主题是智能家居系统"
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div className="p-8 bg-white border border-gray-200 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
-              <div className="flex items-center mb-4">
-                <div className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center mr-3">
-                  <Search className="w-5 h-5 text-white" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-800">{t("deep_research", "深度研究")}</h3>
-              </div>
-              <p className="text-gray-600 mb-6 leading-relaxed">
-                {t("deep_research_desc", "进行深入的主题研究，生成详细的分析报告")}
-              </p>
-              <div className="space-y-3">
-                <p className="text-sm font-semibold text-gray-800">🔍 深度研究主题示例：</p>
-                <div className="space-y-2">
-                  <p 
-                    className="text-sm text-gray-600 bg-gray-50 px-3 py-2 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handlePromptClick("2024年人工智能在教育领域的最新应用与发展趋势")}
-                  >
-                    • "2024年人工智能在教育领域的最新应用与发展趋势"
-                  </p>
-                  <p 
-                    className="text-sm text-gray-600 bg-gray-50 px-3 py-2 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handlePromptClick("新能源汽车产业链分析：技术突破与市场机遇")}
-                  >
-                    • "新能源汽车产业链分析：技术突破与市场机遇"
-                  </p>
-                  <p 
-                    className="text-sm text-gray-600 bg-gray-50 px-3 py-2 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handlePromptClick("元宇宙技术发展现状及对未来社交方式的影响")}
-                  >
-                    • "元宇宙技术发展现状及对未来社交方式的影响"
-                  </p>
-                  <p 
-                    className="text-sm text-gray-600 bg-gray-50 px-3 py-2 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handlePromptClick("碳中和目标下的绿色金融创新模式研究")}
-                  >
-                    • "碳中和目标下的绿色金融创新模式研究"
-                  </p>
-                </div>
-              </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* 聊天界面 - 使用绝对定位和动画 */}
-      <div
-        className={cn(
-          "absolute inset-0 flex flex-col transition-all duration-700 ease-in-out",
-          isChatMode
-            ? "opacity-100 pointer-events-auto transform translate-y-0"
-            : "opacity-0 pointer-events-none transform translate-y-[20px]"
-        )}
-      >
-        {/* 工具栏 - 移到顶部 */}
-        {hasMessages && (
-          <div className="flex-shrink-0 border-b bg-background p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleRegenerate}
-                  disabled={!canRegenerate}
-                >
-                  <RotateCcw className="w-4 h-4 mr-2" />
-                  {t("regenerate", "重新生成")}
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleClear}
-                  disabled={isLoading}
-                >
-                  <Trash2 className="w-4 h-4 mr-2" />
-                  {t("clear_messages", "清除消息")}
-                </Button>
-              </div>
-              
+          
+          {/* 工具栏按钮 */}
+          {hasMessages && (
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleRegenerate}
+                disabled={!canRegenerate}
+                className="text-gray-600 hover:text-gray-900"
+              >
+                <RotateCcw className="w-4 h-4 mr-1" />
+                重新生成
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleClear}
+                disabled={isLoading}
+                className="text-gray-600 hover:text-gray-900"
+              >
+                <Trash2 className="w-4 h-4 mr-1" />
+                清除对话
+              </Button>
               {isLoading && (
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={handleStop}
+                  className="text-red-600 hover:text-red-700"
                 >
-                  <Square className="w-4 h-4 mr-2" />
-                  {t("stop_generation", "停止生成")}
+                  <Square className="w-4 h-4 mr-1" />
+                  停止生成
                 </Button>
               )}
             </div>
+          )}
+        </div>
+      </div>
+
+      {/* 主要内容区域 */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* 欢迎界面 - 无消息时显示 */}
+        {!hasMessages && !isTransitioning && (
+          <div className="flex-1 flex flex-col items-center justify-center p-8">
+            <div className="max-w-2xl text-center space-y-8">
+              {/* 欢迎图标 */}
+              <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto">
+                <MessageSquare className="w-8 h-8 text-white" />
+              </div>
+              
+              {/* 欢迎文字 */}
+              <div className="space-y-4">
+                <h2 className="text-2xl font-bold text-gray-900">
+                  开始您的电力行业情报分析
+                </h2>
+                <p className="text-gray-600 leading-relaxed">
+                  我是您的专业助手，可以帮助您分析电力行业趋势、政策影响、技术发展等各类问题
+                </p>
+              </div>
+
+              {/* 核心功能介绍 */}
+              <div className="space-y-6">
+                <h3 className="text-lg font-semibold text-gray-800 text-center">核心功能介绍</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* 智能问答卡片 */}
+                  <div className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all duration-300 hover:border-blue-300">
+                    <div className="flex items-center space-x-3 mb-4">
+                      <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <MessageSquare className="w-5 h-5 text-blue-600" />
+                      </div>
+                      <h4 className="text-lg font-semibold text-gray-900">智能问答</h4>
+                    </div>
+                    <p className="text-gray-600 text-sm leading-relaxed mb-4">
+                      与AI进行实时对话，获取即时回答和建议，支持电力行业专业知识问答
+                    </p>
+                    <div className="flex items-center justify-center text-blue-600 text-sm font-medium">
+                      <span>立即开始对话</span>
+                      <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </div>
+
+                  {/* 行业情报分析卡片 */}
+                  <div className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all duration-300 hover:border-purple-300">
+                    <div className="flex items-center space-x-3 mb-4">
+                      <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <Search className="w-5 h-5 text-purple-600" />
+                      </div>
+                      <h4 className="text-lg font-semibold text-gray-900">行业情报分析</h4>
+                    </div>
+                    <p className="text-gray-600 text-sm leading-relaxed mb-4">
+                      深度分析电力行业趋势，生成详细的分析报告，助力决策制定
+                    </p>
+                    <Link 
+                      href="/research"
+                      className="inline-flex items-center text-purple-600 text-sm font-medium hover:text-purple-700 transition-colors"
+                    >
+                      <span>进入深度研究</span>
+                      <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+
+              {/* 示例问题 */}
+              <div className="space-y-4">
+                <p className="text-sm font-medium text-gray-700">试试这些问题：</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {[
+                    "分析当前电力行业发展趋势",
+                    "新能源政策对电网建设的影响",
+                    "智能电网技术最新进展",
+                    "电力市场化改革现状分析"
+                  ].map((question, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setMessage(question)}
+                      className="p-3 text-sm bg-white border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-all duration-200 text-left text-gray-700 hover:text-blue-700"
+                    >
+                      {question}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         )}
+        {/* 聊天界面 - 有消息时显示 */}
+        {(hasMessages || isTransitioning) && (
+          <div className="flex-1 flex flex-col overflow-hidden">
+            {/* 消息列表区域 */}
+            <div className="flex-1 min-h-0">
+              <ChatMessageList
+                streamingContent={streamingContent}
+                isStreaming={isStreaming}
+                className="h-full"
+              />
+            </div>
+          </div>
+        )}
+      </div>
 
-        {/* 消息列表区域 */}
-        <div className="flex-1 min-h-0">
-          <ChatMessageList
-            streamingContent={streamingContent}
-            isStreaming={isStreaming}
-            className="h-full"
-          />
-        </div>
-
-        {/* 知识库上下文选择器 - 仅在聊天模式显示 */}
-        {isChatMode && (
-          <div className="flex-shrink-0 border-t bg-background p-4 pb-32">
+      {/* 底部输入区域 */}
+      <div className="flex-shrink-0 bg-white border-t border-gray-200">
+        {/* 知识库和高级功能选项 - 折叠式 */}
+        {(hasMessages || isTransitioning) && (
+          <div className="border-b border-gray-100 px-6 py-3">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center space-x-4">
                 <KnowledgeContextSelector
                   selectedKnowledgeIds={selectedKnowledgeIds}
                   onSelectionChange={setSelectedKnowledgeIds}
@@ -339,40 +317,67 @@ export default function UnifiedChatInterface() {
                   onSelectionChange={setSelectedKnowledgeIds}
                 />
               </div>
-              <div className="text-xs text-muted-foreground">
-                {selectedKnowledgeIds.length > 0
-                  ? t("knowledge_context_enabled", "知识库上下文已启用 ({{count}} 项)", {
-                      count: selectedKnowledgeIds.length,
-                    })
-                  : t("knowledge_context_disabled", "知识库上下文未启用")}
+              <div className="flex items-center space-x-3">
+                <Link
+                  href="/research"
+                  className="inline-flex items-center px-3 py-1.5 text-sm bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-200 font-medium"
+                >
+                  <Search className="w-4 h-4 mr-1" />
+                  深度研究
+                </Link>
+                <div className="text-xs text-gray-500">
+                  {selectedKnowledgeIds.length > 0
+                    ? `知识库已启用 (${selectedKnowledgeIds.length} 项)`
+                    : "知识库未启用"}
+                </div>
               </div>
             </div>
           </div>
         )}
-      </div>
 
-      {/* 统一的输入框 - 固定在底部，支持平滑过渡 */}
-      <div
-        className={cn(
-          "absolute bottom-0 left-0 right-0 bg-background transition-all duration-700 ease-in-out z-10",
-          isChatMode
-            ? "border-t p-4"
-            : "border-0 p-8 flex justify-center items-end"
-        )}
-      >
-        <div
-          className={cn(
-            "transition-all duration-700 ease-in-out",
-            isChatMode
-              ? "w-full"
-              : "w-full max-w-3xl mx-auto"
-          )}
-        >
-          {/* 知识库选择器和深度研究按钮 - 仅在欢迎模式显示 */}
-          {!isChatMode && (
-            <div className="space-y-4 mb-6">
-              <div className="flex items-center justify-center">
-                <div className="flex items-center gap-4">
+        {/* 输入框区域 */}
+        <div className="px-6 py-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="relative">
+              <Textarea
+                placeholder={t("chat_placeholder", "输入您的问题...")}
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                onKeyPress={handleKeyPress}
+                disabled={isLoading}
+                className="pr-16 resize-none min-h-[60px] max-h-[200px] w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-xl"
+                rows={2}
+              />
+              <div className="absolute bottom-3 right-3 flex items-center space-x-2">
+                {!hasMessages && !isTransitioning && (
+                  <Link
+                    href="/research"
+                    className="inline-flex items-center px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded-md hover:bg-gray-200 transition-colors"
+                  >
+                    <Search className="w-3 h-3 mr-1" />
+                    深度研究
+                  </Link>
+                )}
+                <Button
+                  onClick={handleSend}
+                  disabled={!message.trim() || isLoading}
+                  size="sm"
+                  className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
+                >
+                  {isLoading ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Send className="w-4 h-4" />
+                  )}
+                </Button>
+              </div>
+            </div>
+            
+            {/* 提示信息 */}
+            <div className="flex items-center justify-between text-xs text-gray-500 mt-2">
+              <span>按 Enter 发送，Shift+Enter 换行</span>
+              {!hasMessages && !isTransitioning && (
+                <div className="flex items-center space-x-4">
                   <KnowledgeContextSelector
                     selectedKnowledgeIds={selectedKnowledgeIds}
                     onSelectionChange={setSelectedKnowledgeIds}
@@ -381,67 +386,15 @@ export default function UnifiedChatInterface() {
                     selectedKnowledgeIds={selectedKnowledgeIds}
                     onSelectionChange={setSelectedKnowledgeIds}
                   />
-                  <div className="text-xs text-muted-foreground">
+                  <span className="text-xs text-gray-400">
                     {selectedKnowledgeIds.length > 0
-                      ? t("knowledge_context_enabled", "知识库上下文已启用 ({{count}} 项)", {
-                          count: selectedKnowledgeIds.length,
-                        })
-                      : t("knowledge_context_disabled", "知识库上下文未启用")}
-                  </div>
+                      ? `知识库已启用 (${selectedKnowledgeIds.length} 项)`
+                      : "知识库未启用"}
+                  </span>
                 </div>
-              </div>
-              {/* 深度研究按钮 - 移动到输入框附近 */}
-              <div className="flex justify-center">
-                <Link
-                  href="/research"
-                  className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl hover:from-purple-600 hover:to-pink-600 transition-all duration-200 font-medium text-sm shadow-lg hover:shadow-xl transform hover:scale-105"
-                >
-                  <Search className="w-4 h-4 mr-2" />
-                  {t("deep_research", "深度研究")}
-                </Link>
-              </div>
+              )}
             </div>
-          )}
-          
-          {/* 输入框 */}
-          <div className={cn(
-            "relative",
-            !isChatMode && "max-w-2xl mx-auto"
-          )}>
-            <Textarea
-              placeholder={t("chat_placeholder", "输入您的问题...")}
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              onKeyPress={handleKeyPress}
-              disabled={isLoading}
-              className={cn(
-                "pr-12 resize-none transition-all duration-300 w-full",
-                isChatMode
-                  ? "min-h-[80px] max-h-[200px]"
-                  : "min-h-[120px]"
-              )}
-              rows={isChatMode ? 3 : 5}
-            />
-            <Button
-              onClick={handleSend}
-              disabled={!message.trim() || isLoading}
-              size="sm"
-              className="absolute bottom-3 right-3"
-            >
-              {isLoading ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Send className="w-4 h-4" />
-              )}
-            </Button>
           </div>
-
-          {/* 提示信息 - 仅在聊天模式显示 */}
-          {isChatMode && (
-            <div className="flex items-center justify-between text-xs text-muted-foreground mt-2">
-              <span>{t("enter_to_send", "按 Enter 发送，Shift+Enter 换行")}</span>
-            </div>
-          )}
         </div>
       </div>
     </div>
