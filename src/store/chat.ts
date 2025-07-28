@@ -3,6 +3,7 @@ import { persist, type StorageValue } from "zustand/middleware";
 import { researchStore } from "@/utils/storage";
 import { customAlphabet } from "nanoid";
 import { clone, pick } from "radash";
+import { useChatSettingsStore } from "@/store/chatSettings";
 
 // 聊天状态接口
 export interface ChatStore {
@@ -157,6 +158,8 @@ persist<ChatStore & ChatFunction>(
         const id = nanoid();
         // 获取当前时间戳
         const now = Date.now();
+        // 获取当前聊天设置
+        const chatSettings = useChatSettingsStore.getState();
         // 创建新会话对象
         const newSession: ChatSession = {
           id,
@@ -165,9 +168,9 @@ persist<ChatStore & ChatFunction>(
           createdAt: now,
           updatedAt: now,
           settings: {
-            model: "gpt-3.5-turbo",
-            provider: "openai",
-            temperature: 0.7,
+            model: chatSettings.model,
+            provider: chatSettings.provider,
+            temperature: chatSettings.temperature,
           },
           knowledgeContext: [],
         };
