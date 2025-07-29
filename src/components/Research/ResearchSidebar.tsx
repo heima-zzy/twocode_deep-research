@@ -2,8 +2,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { 
-  ChevronLeft, 
-  ChevronRight, 
   Plus, 
   Search, 
   FileText, 
@@ -125,7 +123,7 @@ export default function ResearchSidebar({ isOpen, onToggle, onNewResearch }: Res
       type: 'application/json'
     });
     
-    downloadFile(blob, `${item.title || '研究报告'}.json`);
+    downloadFile(blob, `${item.title || '研究报告'}.json`, 'application/json');
   };
 
   // 删除研究记录

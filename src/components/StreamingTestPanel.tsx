@@ -44,7 +44,7 @@ const StreamingTestPanel: React.FC = () => {
     setTestResults(prev => [...prev, `${new Date().toLocaleTimeString()}: ${result}`]);
   };
 
-  const handleSendMessage = async (message: string, options: {} = {}) => {
+  const handleSendMessage = async (message: string) => {
     if (!message.trim()) return;
 
     addTestResult(`开始发送消息: "${message.substring(0, 50)}${message.length > 50 ? '...' : ''}"`);    
@@ -134,7 +134,7 @@ const StreamingTestPanel: React.FC = () => {
               <label className="block text-sm font-medium mb-1">AI 提供者</label>
               <select
                 value={chatSettings.provider}
-                onChange={(e) => chatSettings.updateSettings({ provider: e.target.value })}
+                onChange={(e) => chatSettings.update({ provider: e.target.value })}
                 className="w-full p-2 border rounded-md"
               >
                 <option value="google">Google Gemini</option>
@@ -153,7 +153,7 @@ const StreamingTestPanel: React.FC = () => {
                 <input
                   type="checkbox"
                   checked={chatSettings.enableStreaming}
-                  onChange={(e) => chatSettings.updateSettings({ enableStreaming: e.target.checked })}
+                  onChange={(e) => chatSettings.update({ enableStreaming: e.target.checked })}
                   className="rounded"
                 />
                 <span>启用流式处理</span>

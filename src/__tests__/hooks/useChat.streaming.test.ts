@@ -2,7 +2,7 @@ import { renderHook, act } from '@testing-library/react';
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { useChat } from '@/hooks/useChat';
 import { useChatStore } from '@/store/chat';
-import { useChatSettingsStore } from '@/store/chatSettings';
+import { useChatSettingStore } from '@/store/chatSetting';
 import { useKnowledgeStore } from '@/store/knowledge';
 import { streamText, generateText } from 'ai';
 import { ThinkTagStreamProcessor } from '@/utils/text';
@@ -24,7 +24,7 @@ vi.mock('@ai-sdk/google', () => ({
 
 // Mock stores
 vi.mock('@/store/chat');
-vi.mock('@/store/chatSettings');
+vi.mock('@/store/chatSetting');
 vi.mock('@/store/knowledge');
 
 // Mock constants
@@ -97,7 +97,7 @@ describe('useChat 流式处理测试', () => {
     enableStreaming: true,
 
     systemPrompt: '你是一个智能助手',
-    updateSettings: vi.fn(),
+    update: vi.fn(),
     resetSettings: vi.fn(),
     getApiKey: vi.fn(() => 'test-api-key'),
     getApiProxy: vi.fn(() => ''),
@@ -118,7 +118,7 @@ describe('useChat 流式处理测试', () => {
     
     // Setup store mocks
     vi.mocked(useChatStore).mockReturnValue(mockChatStore);
-    vi.mocked(useChatSettingsStore).mockReturnValue(mockChatSettings);
+    vi.mocked(useChatSettingStore).mockReturnValue(mockChatSettings);
     vi.mocked(useKnowledgeStore).mockReturnValue(mockKnowledgeStore);
   });
 
@@ -132,7 +132,6 @@ describe('useChat 流式处理测试', () => {
 
       expect(result.current.isGenerating).toBe(false);
       expect(result.current.isStreaming).toBe(false);
-      expect(result.current.isThinking).toBe(false);
       expect(result.current.streamingContent).toBe('');
     });
 
@@ -182,7 +181,7 @@ describe('useChat 流式处理测试', () => {
       // 验证最终状态重置
       expect(result.current.isGenerating).toBe(false);
       expect(result.current.isStreaming).toBe(false);
-      expect(result.current.isThinking).toBe(false);
+
       expect(result.current.streamingContent).toBe('');
     });
   });
@@ -221,13 +220,8 @@ describe('useChat 流式处理测试', () => {
     it('应该正确处理思考内容和回复内容', async () => {
       const { result } = renderHook(() => useChat());
       
-      let contentCallback: ((data: string) => void) | undefined;
-      let thinkingCallback: ((data: string) => void) | undefined;
-      
       const mockProcessor = {
         processChunk: vi.fn((chunk, contentCb, thinkingCb) => {
-          contentCallback = contentCb;
-          thinkingCallback = thinkingCb;
           
           // 模拟处理思考内容
           if (chunk.includes('<think>')) {
@@ -300,7 +294,7 @@ describe('useChat 流式处理测试', () => {
       expect(abortSpy).toHaveBeenCalled();
       expect(result.current.isGenerating).toBe(false);
       expect(result.current.isStreaming).toBe(false);
-      expect(result.current.isThinking).toBe(false);
+
       expect(result.current.streamingContent).toBe('');
     });
 
@@ -315,7 +309,7 @@ describe('useChat 流式处理测试', () => {
 
       expect(result.current.isGenerating).toBe(false);
       expect(result.current.isStreaming).toBe(false);
-      expect(result.current.isThinking).toBe(false);
+
       expect(result.current.streamingContent).toBe('');
       expect(mockChatStore.setLoading).toHaveBeenCalledWith(false);
     });

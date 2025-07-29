@@ -42,7 +42,7 @@ const StreamingTestPage: React.FC = () => {
               
               <div>
                 <h3 className="font-semibold text-gray-800">⏹️ 停止生成</h3>
-                <p>在生成过程中点击"停止"按钮，测试中断功能是否正常工作。</p>
+                <p>在生成过程中点击&quot;停止&quot;按钮，测试中断功能是否正常工作。</p>
               </div>
               
               <div>

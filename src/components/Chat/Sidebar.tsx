@@ -14,7 +14,7 @@ import {
   Settings,
   BookOpen,
   Search,
-  ChevronLeft,
+
 } from "lucide-react";
 
 export default function Sidebar() {
@@ -24,7 +24,6 @@ export default function Sidebar() {
     setOpenChatSetting,
     setOpenHistory,
     setOpenKnowledge,
-    setSidebarOpen,
   } = useGlobalStore();
 
   const handleOpenChatSetting = () => {

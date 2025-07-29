@@ -36,7 +36,7 @@ export default function NewChatButton() {
       } else {
         toast.error(t("new_chat_failed", "创建新对话失败"));
       }
-    } catch (error) {
+    } catch {
       toast.error(t("new_chat_failed", "创建新对话失败"));
     } finally {
       setIsCreating(false);

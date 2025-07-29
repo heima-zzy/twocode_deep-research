@@ -241,7 +241,7 @@ persist<ChatStore & ChatFunction>(
         const state = get();
         if (!state.currentSession) {
           // 如果没有当前会话，创建一个新会话
-          const sessionId = get().createSession();
+          get().createSession();
         }
         
         const messageId = nanoid();

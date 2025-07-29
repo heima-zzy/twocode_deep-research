@@ -14,7 +14,6 @@ import { z } from "zod";
 import { Password } from "@/components/Internal/PasswordInput";
 import {
   Dialog,
-  DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
@@ -48,24 +47,11 @@ import {
 import { useModelList } from "@/hooks/useModelList";
 import { useChatSettingStore } from "@/store/chatSetting";
 import {
-  GEMINI_BASE_URL,
-  OPENROUTER_BASE_URL,
   OPENAI_BASE_URL,
-  ANTHROPIC_BASE_URL,
   DEEPSEEK_BASE_URL,
-  XAI_BASE_URL,
-  MISTRAL_BASE_URL,
-  POLLINATIONS_BASE_URL,
-  OLLAMA_BASE_URL,
+  GEMINI_BASE_URL,
 } from "@/constants/urls";
 import {
-  filterThinkingModelList,
-
-  filterOpenRouterModelList,
-  filterDeepSeekModelList,
-  filterOpenAIModelList,
-  filterMistralModelList,
-  filterPollinationsModelList,
   getCustomModelList,
 } from "@/utils/model";
 import { cn } from "@/utils/style";
@@ -110,6 +96,7 @@ const formSchema = z.object({
   pollinationsApiProxy: z.string().optional(),
   ollamaApiProxy: z.string().optional(),
   accessPassword: z.string().optional(),
+  smoothStreamType: z.enum(["character", "word", "line"]).optional(),
 });
 
 function convertModelName(name: string) {
@@ -156,7 +143,7 @@ function HelpTip({ children, tip }: { children: ReactNode; tip: string }) {
 function ChatSetting({ open, onClose }: ChatSettingProps) {
   const { t } = useTranslation();
   const { mode, provider, update } = useChatSettingStore();
-  const { modelList, refresh } = useModelList('chat');
+  const { modelList, refresh } = useModelList();
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [hasPreLoaded, setHasPreLoaded] = useState<boolean>(false);
 
@@ -243,12 +230,13 @@ function ChatSetting({ open, onClose }: ChatSettingProps) {
 
   useLayoutEffect(() => {
     if (open && mode === "") {
-      const { apiKey, accessPassword, update } = useChatSettingStore.getState();
+      const { accessPassword, update, getApiKey } = useChatSettingStore.getState();
+      const apiKey = getApiKey(provider);
       const requestMode = !apiKey && accessPassword ? "proxy" : "local";
       update({ mode: requestMode });
       form.setValue("mode", requestMode);
     }
-  }, [open, mode, form]);
+  }, [open, mode, form, provider]);
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
@@ -694,7 +682,7 @@ function ChatSetting({ open, onClose }: ChatSettingProps) {
                            checked={field.value}
                            onCheckedChange={(checked) => {
                              field.onChange(checked);
-                             updateSetting("enableStreaming", checked);
+                             update({ enableStreaming: checked });
                            }}
                          />
                        </FormControl>

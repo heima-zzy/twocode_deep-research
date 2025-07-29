@@ -1,7 +1,7 @@
 "use client";
 import { ReactNode, useEffect } from "react";
 import { useGlobalStore } from "@/store/global";
-import { cn } from "@/utils/style";
+
 import Sidebar from "./Sidebar";
 import MainContent from "./MainContent";
 
@@ -12,11 +12,12 @@ interface ChatLayoutProps {
 export default function ChatLayout({ children }: ChatLayoutProps) {
   const { sidebarOpen, setSidebarOpen } = useGlobalStore();
 
-  // 在客户端挂载后根据屏幕尺寸设置侧边栏状态
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth >= 1024) {
+      if (window.innerWidth >= 768) {
         setSidebarOpen(true);
+      } else {
+        setSidebarOpen(false);
       }
     };
 

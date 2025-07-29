@@ -10,8 +10,6 @@ import {
   BookText,
   Paperclip,
   Link,
-  TextSearch,
-  RotateCcw,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";

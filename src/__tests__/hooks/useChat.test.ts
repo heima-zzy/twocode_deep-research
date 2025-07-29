@@ -2,7 +2,7 @@ import { renderHook, act } from '@testing-library/react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { useChat } from '@/hooks/useChat';
 import { useChatStore } from '@/store/chat';
-import { useChatSettingsStore } from '@/store/chatSettings';
+import { useChatSettingStore } from '@/store/chatSetting';
 import { useKnowledgeStore } from '@/store/knowledge';
 
 // Mock AI SDK
@@ -22,7 +22,7 @@ vi.mock('@ai-sdk/google', () => ({
 
 // Mock stores
 vi.mock('@/store/chat');
-vi.mock('@/store/chatSettings');
+vi.mock('@/store/chatSetting');
 vi.mock('@/store/knowledge');
 
 // Mock constants
@@ -45,7 +45,7 @@ vi.mock('@/utils/url', () => ({
 
 describe('useChat Hook', () => {
   const mockChatStore = {
-    currentSession: null,
+    currentSession: null as any,
     sessions: [],
     isLoading: false,
     error: null,
@@ -77,7 +77,7 @@ describe('useChat Hook', () => {
     enableStreaming: true,
 
     systemPrompt: '你是一个智能助手',
-    updateSettings: vi.fn(),
+    update: vi.fn(),
     resetSettings: vi.fn(),
     getApiKey: vi.fn(() => 'test-api-key'),
     getApiProxy: vi.fn(() => ''),
@@ -97,7 +97,7 @@ describe('useChat Hook', () => {
     
     // Setup store mocks
     vi.mocked(useChatStore).mockReturnValue(mockChatStore);
-    vi.mocked(useChatSettingsStore).mockReturnValue(mockChatSettings);
+    vi.mocked(useChatSettingStore).mockReturnValue(mockChatSettings);
     vi.mocked(useKnowledgeStore).mockReturnValue(mockKnowledgeStore);
   });
 
@@ -118,7 +118,6 @@ describe('useChat Hook', () => {
     expect(result.current.isLoading).toBe(false);
     expect(result.current.isGenerating).toBe(false);
     expect(result.current.isStreaming).toBe(false);
-    expect(result.current.isThinking).toBe(false);
     expect(result.current.streamingContent).toBe("");
     expect(result.current.error).toBe(null);
     expect(result.current.currentMessage).toBe("");
@@ -217,8 +216,12 @@ describe('useChat Hook', () => {
       id: 'session-1',
       title: '测试会话',
       messages: [],
-      createdAt: new Date(),
-      updatedAt: new Date()
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+      settings: {
+        model: 'gpt-3.5-turbo',
+        provider: 'openai'
+      }
     };
     
     await act(async () => {
@@ -241,8 +244,12 @@ describe('useChat Hook', () => {
       id: 'session-1',
       title: '测试会话',
       messages: [],
-      createdAt: new Date(),
-      updatedAt: new Date()
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+      settings: {
+        model: 'gpt-3.5-turbo',
+        provider: 'openai'
+      }
     };
     
     await act(async () => {

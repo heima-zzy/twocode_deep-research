@@ -3,8 +3,7 @@ import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Card } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+
 import Link from "next/link";
 import {
   Send,
@@ -17,13 +16,13 @@ import {
 } from "lucide-react";
 import { useChat } from "@/hooks/useChat";
 import { useChatStore } from "@/store/chat";
-import { useChatSettingStore } from "@/store/chatSetting";
+
 import ChatMessageList from "./ChatMessageList";
 import KnowledgeContextSelector from "./KnowledgeContextSelector";
 import UrlContextInjector from "./UrlContextInjector";
-import { cn } from "@/utils/style";
+
 import { toast } from "sonner";
-import LoadingProgress from "@/components/LoadingProgress";
+
 
 export default function UnifiedChatInterface() {
   const { t } = useTranslation();
@@ -31,7 +30,7 @@ export default function UnifiedChatInterface() {
   const [selectedKnowledgeIds, setSelectedKnowledgeIds] = useState<string[]>([]);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [newChatTransition, setNewChatTransition] = useState(false);
-  const [showLoadingProgress, setShowLoadingProgress] = useState(false);
+
   const [isSending, setIsSending] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   
@@ -46,23 +45,17 @@ export default function UnifiedChatInterface() {
   } = useChat();
   
   const { currentSession } = useChatStore();
-  const {} = useChatSettingStore();
+
 
   // 判断是否有聊天消息
   const hasMessages = currentSession?.messages && currentSession.messages.length > 0;
   
   // 判断是否处于聊天模式
-  const isChatMode = hasMessages || isTransitioning;
 
-  const handleDeepResearchClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setShowLoadingProgress(true);
-  };
 
-  const handleLoadingComplete = () => {
-    setShowLoadingProgress(false);
-    window.location.href = '/research';
-  };
+
+
+
 
   // 监听会话变化，处理新建对话的过渡效果
   useEffect(() => {
@@ -78,7 +71,7 @@ export default function UnifiedChatInterface() {
       
       return () => clearTimeout(timer);
     }
-  }, [currentSession?.id, hasMessages]);
+  }, [currentSession?.id, hasMessages, currentSession]);
 
   // 发送消息
   const handleSend = async () => {
@@ -153,18 +146,7 @@ export default function UnifiedChatInterface() {
     toast.success(t("messages_cleared", "消息已清除"));
   };
 
-  // 处理示例点击
-  const handlePromptClick = (prompt: string) => {
-    setMessage(prompt);
-    // 自动聚焦到输入框
-    setTimeout(() => {
-      const textarea = document.querySelector('textarea');
-      if (textarea) {
-        textarea.focus();
-        textarea.setSelectionRange(textarea.value.length, textarea.value.length);
-      }
-    }, 100);
-  };
+
 
   // 重新生成
   const handleRegenerate = async () => {

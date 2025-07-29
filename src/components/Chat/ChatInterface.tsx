@@ -3,19 +3,16 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Card } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+
 import {
   Send,
   Loader2,
   Square,
-  RotateCcw,
-  Settings,
   Trash2,
 } from "lucide-react";
 import { useChat } from "@/hooks/useChat";
 import { useChatStore } from "@/store/chat";
-import { useChatSettingStore } from "@/store/chatSetting";
+
 import ChatMessageList from "./ChatMessageList";
 import KnowledgeContextSelector from "./KnowledgeContextSelector";
 import { cn } from "@/utils/style";
@@ -40,7 +37,7 @@ export default function ChatInterface({ className }: ChatInterfaceProps) {
   } = useChat();
   
   const { currentSession } = useChatStore();
-  const {} = useChatSettingStore();
+
 
   // 发送消息
   const handleSend = async () => {
@@ -100,7 +97,7 @@ export default function ChatInterface({ className }: ChatInterfaceProps) {
     }
   };
 
-  const hasMessages = currentSession?.messages.length > 0;
+  const hasMessages = currentSession?.messages && currentSession.messages.length > 0;
   const canRegenerate = hasMessages && !isLoading;
 
   return (
@@ -127,7 +124,6 @@ export default function ChatInterface({ className }: ChatInterfaceProps) {
                   onClick={handleRegenerate}
                   disabled={!canRegenerate}
                 >
-                  <RotateCcw className="w-4 h-4 mr-2" />
                   {t("regenerate", "重新生成")}
                 </Button>
                 <Button

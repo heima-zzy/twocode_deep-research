@@ -190,7 +190,7 @@ export default function KnowledgeContextSelector({
                 </span>
                 <Badge variant="outline">
                   {t("total_chars", "共 {{count}} 字符", {
-                    count: getTotalContentLength().toLocaleString(),
+                    count: getTotalContentLength(),
                   })}
                 </Badge>
               </div>

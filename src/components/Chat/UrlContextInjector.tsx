@@ -5,7 +5,7 @@ import { Button } from "@/components/Internal/Button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
+
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Dialog,
@@ -30,15 +30,11 @@ import {
   CheckCircle,
   AlertCircle,
   ExternalLink,
-  Trash2,
-  Download,
-  XCircle,
-  Clock,
 } from "lucide-react";
 import { toast } from "sonner";
 import useKnowledge from "@/hooks/useKnowledge";
 import { useKnowledgeStore } from "@/store/knowledge";
-import { cn } from "@/utils/style";
+
 
 interface UrlContextInjectorProps {
   selectedKnowledgeIds: string[];

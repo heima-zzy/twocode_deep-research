@@ -97,7 +97,7 @@ export function useChat(): UseChatReturn {
   
   // 创建聊天专用的AI提供者
   const createChatAIProvider = useCallback(async (options: ChatAIProviderOptions) => {
-    const { provider, model, apiKey, baseURL, headers, temperature, maxTokens } = options;
+    const { provider, model, apiKey, baseURL, headers } = options;
     
     switch (provider) {
       case "google": {
@@ -269,6 +269,10 @@ export function useChat(): UseChatReturn {
   ) => {
     if (!content.trim() || chatStore.isLoading || isGenerating) return;
     
+    // 先不添加用户消息，等AI响应开始后再添加
+    let userMessageId: string | null = null;
+    let assistantMessageId: string | null = null;
+    
     try {
       setIsGenerating(true);
       setIsStreaming(chatSettings.enableStreaming);
@@ -280,9 +284,6 @@ export function useChat(): UseChatReturn {
       if (!chatStore.currentSession) {
         chatStore.createSession();
       }
-      
-      // 先不添加用户消息，等AI响应开始后再添加
-      let userMessageId: string | null = null;
       
       // 准备AI提供者配置
       // 始终使用最新的聊天设置，而不是会话中保存的设置
@@ -344,8 +345,7 @@ export function useChat(): UseChatReturn {
       // 创建中止控制器
       abortControllerRef.current = new AbortController();
       
-      // 先不添加助手消息占位符，等有内容时再添加
-      let assistantMessageId: string | null = null;
+      // assistantMessageId已在函数开始处声明
       
       const startTime = Date.now();
       

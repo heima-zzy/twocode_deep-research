@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useChatStore } from "@/store/chat";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
@@ -169,7 +169,7 @@ export default function ChatMessageList({
                         remarkPlugins={[remarkGfm, remarkBreaks, remarkMath]}
                         rehypePlugins={[rehypeKatex, rehypeHighlight, rehypeRaw]}
                         components={{
-                          code: ({ node, inline, className, children, ...props }) => {
+                          code: ({ inline, className, children, ...props }: any) => {
                             const match = /language-(\w+)/.exec(className || "");
                             return !inline && match ? (
                               <pre className="bg-muted p-3 rounded-md overflow-x-auto">
@@ -303,7 +303,7 @@ export default function ChatMessageList({
                     remarkPlugins={[remarkGfm, remarkBreaks, remarkMath]}
                     rehypePlugins={[rehypeKatex, rehypeHighlight, rehypeRaw]}
                     components={{
-                      code: ({ node, inline, className, children, ...props }) => {
+                      code: ({ inline, className, children, ...props }: any) => {
                         const match = /language-(\w+)/.exec(className || "");
                         return !inline && match ? (
                           <pre className="bg-muted p-3 rounded-md overflow-x-auto">

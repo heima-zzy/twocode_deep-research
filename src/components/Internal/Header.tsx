@@ -4,8 +4,6 @@ import { Settings, Github, History, BookText, Menu, ChevronRight } from "lucide-
 import { Button } from "@/components/Internal/Button";
 import { useGlobalStore } from "@/store/global";
 
-const VERSION = process.env.NEXT_PUBLIC_VERSION;
-
 interface HeaderProps {
   sidebarOpen?: boolean;
   onSidebarToggle?: () => void;
