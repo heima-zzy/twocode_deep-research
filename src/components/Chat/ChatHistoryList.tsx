@@ -108,7 +108,9 @@ export default function ChatHistoryList() {
                 <div className="flex-1 min-w-0 overflow-hidden">
                   <div className="flex items-center gap-2 mb-1">
                     <MessageSquare className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                    <h3 className="text-sm font-medium truncate max-w-[calc(100%-20px)]">{chat.title}</h3>
+                    <h3 className="text-sm font-medium truncate max-w-[calc(100%-20px)]" title={chat.title}>
+                      {chat.title.length > 20 ? `${chat.title.substring(0, 20)}...` : chat.title}
+                    </h3>
                   </div>
                   <p className="text-xs text-muted-foreground">
                     {chat.timestamp}

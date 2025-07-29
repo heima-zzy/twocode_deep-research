@@ -57,7 +57,7 @@ export default function Sidebar() {
           </div>
           
           {/* 桌面端折叠按钮 */}
-          <Button
+         {/*  <Button
             variant="ghost"
             size="sm"
             className="hidden lg:flex p-1 h-8 w-8"
@@ -65,24 +65,29 @@ export default function Sidebar() {
           >
             <ChevronLeft className="w-4 h-4" />
           </Button>
+          */}
         </div>
 
         {/* 新建对话按钮 */}
-        <NewChatButton />
+        <div className="btn-enhanced micro-bounce">
+          <NewChatButton />
+        </div>
       </div>
 
       <Separator />
 
       {/* 中间内容区域 */}
       <div className="flex-1 overflow-hidden">
-        <ScrollArea className="h-full">
+        <ScrollArea className="h-full custom-scrollbar">
           <div className="p-4 space-y-4">
             {/* 历史对话列表 */}
             <div>
               <h3 className="text-sm font-medium text-muted-foreground mb-2">
                 {t("recent_chats", "最近对话")}
               </h3>
-              <ChatHistoryList />
+              <div className="card-hover animate-smooth">
+                <ChatHistoryList />
+              </div>
             </div>
 
             <Separator />
@@ -95,6 +100,12 @@ export default function Sidebar() {
               <div className="space-y-1">
                 <Link
                   href="/research"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    window.open('/research', '_blank', 'noopener,noreferrer');
+              }}
                   className="flex items-center space-x-3 w-full p-2 text-sm rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
                 >
                   <Search className="w-4 h-4" />
@@ -113,30 +124,30 @@ export default function Sidebar() {
         <Button
           variant="ghost"
           size="sm"
-          className="w-full justify-start"
+          className="w-full justify-start btn-enhanced micro-bounce animate-smooth"
           onClick={handleOpenHistory}
         >
-          <History className="w-4 h-4 mr-2" />
+          <History className="w-4 h-4 mr-2 transition-transform duration-200" />
           {t("history.title", "历史记录")}
         </Button>
         
         <Button
           variant="ghost"
           size="sm"
-          className="w-full justify-start"
+          className="w-full justify-start btn-enhanced micro-bounce animate-smooth"
           onClick={handleOpenKnowledge}
         >
-          <BookOpen className="w-4 h-4 mr-2" />
+          <BookOpen className="w-4 h-4 mr-2 transition-transform duration-200" />
           {t("knowledge.title", "知识库")}
         </Button>
         
         <Button
           variant="ghost"
           size="sm"
-          className="w-full justify-start"
+          className="w-full justify-start btn-enhanced micro-bounce animate-smooth"
           onClick={handleOpenChatSetting}
         >
-          <Settings className="w-4 h-4 mr-2" />
+          <Settings className="w-4 h-4 mr-2 transition-transform duration-200" />
           {t("chat_settings", "聊天设置")}
         </Button>
       </div>

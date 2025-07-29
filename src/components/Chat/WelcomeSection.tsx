@@ -8,11 +8,13 @@ import { useState } from "react";
 import { useChat } from "@/hooks/useChat";
 import KnowledgeContextSelector from "./KnowledgeContextSelector";
 import { useChatSettingStore } from "@/store/chatSetting";
+import LoadingProgress from "@/components/LoadingProgress";
 
 export default function WelcomeSection() {
   const { t } = useTranslation();
   const [message, setMessage] = useState("");
   const [selectedKnowledgeIds, setSelectedKnowledgeIds] = useState<string[]>([]);
+  const [showLoadingProgress, setShowLoadingProgress] = useState(false);
   
   const { sendMessage, isLoading } = useChat();
   const {} = useChatSettingStore();
@@ -36,6 +38,16 @@ export default function WelcomeSection() {
       e.preventDefault();
       handleSend();
     }
+  };
+
+  const handleDeepResearchClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setShowLoadingProgress(true);
+  };
+
+  const handleLoadingComplete = () => {
+    setShowLoadingProgress(false);
+    window.location.href = '/research';
   };
 
   return (
@@ -98,6 +110,7 @@ export default function WelcomeSection() {
           <div className="flex justify-center">
             <Link
               href="/research"
+              onClick={handleDeepResearchClick}
               className="inline-flex items-center px-6 py-3 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 transition-colors font-medium"
             >
               <Search className="w-5 h-5 mr-2" />
@@ -122,6 +135,13 @@ export default function WelcomeSection() {
           </div>
         </div>
       </div>
+      
+      {/* 加载进度条 */}
+      <LoadingProgress
+        isVisible={showLoadingProgress}
+        onComplete={handleLoadingComplete}
+        duration={2000}
+      />
     </div>
   );
 }

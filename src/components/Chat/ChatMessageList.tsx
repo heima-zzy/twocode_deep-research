@@ -34,12 +34,14 @@ import "highlight.js/styles/github.css";
 interface ChatMessageListProps {
   streamingContent?: string;
   isStreaming?: boolean;
+  isGenerating?: boolean;
   className?: string;
 }
 
 export default function ChatMessageList({
   streamingContent = "",
   isStreaming = false,
+  isGenerating = false,
   className,
 }: ChatMessageListProps) {
   const { t } = useTranslation();
@@ -124,9 +126,12 @@ export default function ChatMessageList({
             <div
               key={message.id}
               className={cn(
-                "flex gap-4",
+                "flex gap-4 animate-in fade-in-0 slide-in-from-bottom-4 duration-500",
                 isUser ? "justify-end" : "justify-start"
               )}
+              style={{
+                animationDelay: `${index * 100}ms`
+              }}
             >
               {!isUser && (
                 <Avatar className="w-8 h-8 flex-shrink-0">
@@ -148,13 +153,12 @@ export default function ChatMessageList({
                 {/* 消息内容 */}
                 <div
                   className={cn(
-                    "relative group rounded-lg px-4 py-3 break-words",
+                    "relative group rounded-lg px-4 py-3 break-words transition-all duration-300 hover:shadow-md",
                     isUser
-                      ? "bg-primary text-primary-foreground"
+                      ? "bg-primary text-primary-foreground hover:bg-primary/90"
                       : isError
                       ? "bg-destructive/10 border border-destructive/20 text-destructive"
-                      : "bg-muted",
-                    "hover:shadow-sm transition-shadow"
+                      : "bg-muted hover:bg-muted/80"
                   )}
                 >
                   {isUser ? (
@@ -233,17 +237,67 @@ export default function ChatMessageList({
           );
         })}
 
+        {/* AI准备状态显示 - 在消息发送后到开始流式回复之间 */}
+        {isGenerating && !isStreaming && !streamingContent && (
+          <div className="flex gap-4 justify-start animate-in fade-in-0 slide-in-from-left-4 duration-500">
+            <Avatar className="w-8 h-8 flex-shrink-0">
+              <AvatarFallback className="bg-gradient-to-r from-blue-500 to-purple-600 text-white text-xs animate-pulse">
+                <Bot className="w-4 h-4" />
+              </AvatarFallback>
+            </Avatar>
+
+            <div className="flex flex-col max-w-[80%] min-w-0">
+              <div className="relative group rounded-lg px-4 py-3 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/30 dark:to-purple-950/30 break-words border-l-4 border-gradient-to-b from-blue-500 to-purple-600 animate-in slide-in-from-left-2 duration-700">
+                {/* 准备动画效果 */}
+                <div className="flex items-center gap-3">
+                  {/* 脉冲圆环 */}
+                  <div className="relative">
+                    <div className="w-6 h-6 border-2 border-blue-500 rounded-full animate-spin border-t-transparent"></div>
+                    <div className="absolute inset-0 w-6 h-6 border-2 border-purple-500 rounded-full animate-ping opacity-20"></div>
+                  </div>
+                  
+                  {/* 准备文字 */}
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium text-blue-700 dark:text-blue-300 animate-pulse">
+                      {t("ai_preparing", "AI正在准备回复...")}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      {t("please_wait", "请稍候")}
+                    </span>
+                  </div>
+                </div>
+                
+                {/* 波浪动画 */}
+                <div className="flex items-center gap-1 mt-3">
+                  <div className="flex space-x-1">
+                    <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                    <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full animate-bounce" style={{ animationDelay: "200ms" }} />
+                    <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full animate-bounce" style={{ animationDelay: "400ms" }} />
+                    <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full animate-bounce" style={{ animationDelay: "600ms" }} />
+                    <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full animate-bounce" style={{ animationDelay: "800ms" }} />
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
+                <Clock className="w-3 h-3" />
+                <span>{formatMessageTime(Date.now())}</span>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* 流式内容显示 */}
         {isStreaming && streamingContent && (
-          <div className="flex gap-4 justify-start">
-            <Avatar className="w-8 h-8 flex-shrink-0">
+          <div className="flex gap-4 justify-start animate-in fade-in-0 slide-in-from-left-4 duration-300">
+            <Avatar className="w-8 h-8 flex-shrink-0 animate-pulse">
               <AvatarFallback className="bg-primary text-primary-foreground text-xs">
                 <Bot className="w-4 h-4" />
               </AvatarFallback>
             </Avatar>
 
             <div className="flex flex-col max-w-[80%] min-w-0">
-              <div className="relative group rounded-lg px-4 py-3 bg-muted break-words">
+              <div className="relative group rounded-lg px-4 py-3 bg-muted break-words border-l-4 border-blue-500 animate-in slide-in-from-left-2 duration-500">
                 <div className="prose prose-sm max-w-none dark:prose-invert">
                   <ReactMarkdown
                     remarkPlugins={[remarkGfm, remarkBreaks, remarkMath]}
@@ -273,13 +327,13 @@ export default function ChatMessageList({
                 </div>
                 
                 {/* 流式指示器 */}
-                <div className="flex items-center gap-1 mt-2">
+                <div className="flex items-center gap-1 mt-2 animate-in fade-in-0 duration-300">
                   <div className="flex space-x-1">
-                    <div className="w-1 h-1 bg-primary rounded-full animate-pulse" />
-                    <div className="w-1 h-1 bg-primary rounded-full animate-pulse" style={{ animationDelay: "0.2s" }} />
-                    <div className="w-1 h-1 bg-primary rounded-full animate-pulse" style={{ animationDelay: "0.4s" }} />
+                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
                   </div>
-                  <span className="text-xs text-muted-foreground ml-2">
+                  <span className="text-xs text-muted-foreground ml-2 animate-pulse">
                     {t("generating", "生成中...")}
                   </span>
                 </div>

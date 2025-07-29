@@ -79,7 +79,7 @@ function Feedback() {
   }, [taskStore.feedback, form]);
 
   return (
-    <section className="space-y-6 print:hidden">
+    <section className="space-y-6 print:hidden max-w-4xl mx-auto">
       {/* 标题栏 */}
       <div className="flex items-center justify-between p-6 bg-gradient-to-r from-primary/5 to-accent/10 rounded-xl border border-primary/20">
         <div className="flex items-center space-x-3">
