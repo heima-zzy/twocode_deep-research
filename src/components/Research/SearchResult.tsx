@@ -170,13 +170,33 @@ function SearchResult() {
   }, [taskStore.suggestion, form]);
 
   return (
-    <section className="p-4 border rounded-md mt-4 print:hidden">
-      <h3 className="font-semibold text-lg border-b mb-2 leading-10">
-        {t("research.searchResult.title")}
-      </h3>
-      {taskStore.tasks.length === 0 ? (
-        <div>{t("research.searchResult.emptyTip")}</div>
-      ) : (
+    <section className="space-y-6 print:hidden max-w-4xl mx-auto">
+      {/* 标题栏 */}
+      <div className="flex items-center justify-between p-6 bg-gradient-to-r from-primary/5 to-accent/10 rounded-xl border border-primary/20">
+        <div className="flex items-center space-x-3">
+          <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+            <TextSearch className="w-4 h-4 text-primary" />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold text-primary">
+              {t("research.searchResult.title")}
+            </h3>
+            <p className="text-sm text-muted-foreground">收集和整理研究信息</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-card rounded-xl border border-border/50 p-6 shadow-sm">
+        {taskStore.tasks.length === 0 ? (
+          <div className="text-center py-8">
+            <div className="flex flex-col items-center space-y-4">
+              <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center">
+                <TextSearch className="w-8 h-8 text-muted-foreground" />
+              </div>
+              <p className="text-muted-foreground">{t("research.searchResult.emptyTip")}</p>
+            </div>
+          </div>
+        ) : (
         <div>
           <Accordion className="mb-4" type="multiple">
             {taskStore.tasks.map((item, idx) => {
@@ -339,6 +359,7 @@ function SearchResult() {
           </Form>
         </div>
       )}
+      </div>
     </section>
   );
 }

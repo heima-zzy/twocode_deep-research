@@ -39,6 +39,7 @@ async function handler(req: NextRequest) {
           req.headers.get("x-goog-api-client") || "genai-js/0.24.0",
         "x-goog-api-key": req.headers.get("x-goog-api-key") || "",
       },
+      signal: AbortSignal.timeout(30000), // 30秒超时
     };
     if (body) payload.body = JSON.stringify(body);
     const response = await fetch(url, payload);

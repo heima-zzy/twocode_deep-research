@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试链接新窗口打开</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-link { 
+            display: inline-block; 
+            padding: 10px 20px; 
+            background: #007bff; 
+            color: white; 
+            text-decoration: none; 
+            border-radius: 5px; 
+            margin: 10px 0;
+        }
+        .result { 
+            margin: 10px 0; 
+            padding: 10px; 
+            border: 1px solid #ccc; 
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>测试链接新窗口打开功能</h1>
+    
+    <div class="result">
+        <h2>测试说明</h2>
+        <p>点击下面的链接，如果能在新窗口打开，说明浏览器支持新窗口功能。</p>
+        <p>如果无法在新窗口打开，可能是浏览器阻止了弹窗。</p>
+    </div>
+    
+    <h2>测试1: 普通链接到深度研究页面</h2>
+    <a href="http://localhost:3000/research" target="_blank" rel="noopener noreferrer" class="test-link">
+        点击测试 - 深度研究页面（新窗口）
+    </a>
+    
+    <h2>测试2: JavaScript方式</h2>
+    <button onclick="testNewWindow()" class="test-link" style="border: none; cursor: pointer;">
+        JavaScript测试 - 新窗口
+    </button>
+    
+    <h2>测试3: 普通链接到百度</h2>
+    <a href="https://www.baidu.com" target="_blank" rel="noopener noreferrer" class="test-link">
+        点击测试 - 百度（新窗口）
+    </a>
+    
+    <div class="result">
+        <h2>测试结果</h2>
+        <p id="result">等待测试...</p>
+    </div>
+    
+    <script>
+        function testNewWindow() {
+            const newWindow = window.open('http://localhost:3000/research', '_blank', 'noopener,noreferrer');
+            const resultEl = document.getElementById('result');
+            
+            if (newWindow) {
+                resultEl.innerHTML = '✅ JavaScript方式成功打开新窗口';
+                resultEl.style.color = 'green';
+            } else {
+                resultEl.innerHTML = '❌ JavaScript方式被浏览器阻止，请检查弹窗设置';
+                resultEl.style.color = 'red';
+            }
+        }
+        
+        // 检测弹窗阻止
+        window.addEventListener('load', function() {
+            const resultEl = document.getElementById('result');
+            resultEl.innerHTML = '页面已加载，请点击上面的链接进行测试';
+        });
+    </script>
+</body>
+</html>

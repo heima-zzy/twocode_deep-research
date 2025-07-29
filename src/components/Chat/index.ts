@@ -5,3 +5,8 @@ export { default as MainContent } from "./MainContent";
 export { default as NewChatButton } from "./NewChatButton";
 export { default as ChatHistoryList } from "./ChatHistoryList";
 export { default as WelcomeSection } from "./WelcomeSection";
+export { default as ChatInterface } from "./ChatInterface";
+export { default as ChatMessageList } from "./ChatMessageList";
+export { default as KnowledgeContextSelector } from "./KnowledgeContextSelector";
+export { default as ExportChatDialog } from "./ExportChatDialog";
+

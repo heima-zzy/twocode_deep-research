@@ -3,18 +3,37 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import Link from "next/link";
-import { Send, Search } from "lucide-react";
+
+import { Send, Search, Loader2 } from "lucide-react";
 import { useState } from "react";
+import { useChat } from "@/hooks/useChat";
+import KnowledgeContextSelector from "./KnowledgeContextSelector";
+import { useChatSettingStore } from "@/store/chatSetting";
+import LoadingProgress from "@/components/LoadingProgress";
+
 
 export default function WelcomeSection() {
   const { t } = useTranslation();
   const [message, setMessage] = useState("");
 
-  const handleSend = () => {
-    if (message.trim()) {
-      // TODO: 实现发送消息的逻辑
-      console.log("发送消息:", message);
-      setMessage("");
+  const [selectedKnowledgeIds, setSelectedKnowledgeIds] = useState<string[]>([]);
+  const [showLoadingProgress, setShowLoadingProgress] = useState(false);
+  
+  const { sendMessage, isLoading } = useChat();
+  const {} = useChatSettingStore();
+
+  const handleSend = async () => {
+    if (message.trim() && !isLoading) {
+      try {
+        await sendMessage(message, {
+          useKnowledgeContext: selectedKnowledgeIds.length > 0,
+          selectedKnowledgeIds: selectedKnowledgeIds,
+        });
+        setMessage("");
+      } catch (error) {
+        console.error("发送消息失败:", error);
+      }
+
     }
   };
 
@@ -24,6 +43,18 @@ export default function WelcomeSection() {
       handleSend();
     }
   };
+
+
+  const handleDeepResearchClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setShowLoadingProgress(true);
+  };
+
+  const handleLoadingComplete = () => {
+    setShowLoadingProgress(false);
+    window.location.href = '/research';
+  };
+
 
   return (
     <div className="flex flex-col items-center justify-center h-full p-8">
@@ -40,28 +71,56 @@ export default function WelcomeSection() {
 
         {/* 聊天输入区域 */}
         <div className="w-full max-w-2xl mx-auto space-y-4">
-          <div className="relative">
-            <Textarea
-              placeholder={t("chat_placeholder", "输入您的问题...")}
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              onKeyPress={handleKeyPress}
-              className="min-h-[120px] pr-12 resize-none"
-            />
-            <Button
-              onClick={handleSend}
-              disabled={!message.trim()}
-              size="sm"
-              className="absolute bottom-3 right-3"
-            >
-              <Send className="w-4 h-4" />
-            </Button>
+
+          <div className="space-y-3">
+            {/* 知识库上下文选择器 */}
+            <div className="flex items-center justify-between">
+              <KnowledgeContextSelector
+                selectedKnowledgeIds={selectedKnowledgeIds}
+                onSelectionChange={setSelectedKnowledgeIds}
+              />
+              <div className="text-xs text-muted-foreground">
+                {selectedKnowledgeIds.length > 0
+                  ? t("knowledge_context_enabled", "知识库上下文已启用 ({{count}} 项)", {
+                      count: selectedKnowledgeIds.length,
+                    })
+                  : t("knowledge_context_disabled", "知识库上下文未启用")}
+              </div>
+            </div>
+            
+            {/* 聊天输入框 */}
+            <div className="relative">
+              <Textarea
+                placeholder={t("chat_placeholder", "输入您的问题...")}
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                onKeyPress={handleKeyPress}
+                disabled={isLoading}
+                className="min-h-[120px] pr-12 resize-none"
+              />
+              <Button
+                onClick={handleSend}
+                disabled={!message.trim() || isLoading}
+                size="sm"
+                className="absolute bottom-3 right-3"
+              >
+                {isLoading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Send className="w-4 h-4" />
+                )}
+              </Button>
+            </div>
+
           </div>
           
           {/* 深度研究按钮 */}
           <div className="flex justify-center">
             <Link
               href="/research"
+
+              onClick={handleDeepResearchClick}
+
               className="inline-flex items-center px-6 py-3 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 transition-colors font-medium"
             >
               <Search className="w-5 h-5 mr-2" />
@@ -86,6 +145,15 @@ export default function WelcomeSection() {
           </div>
         </div>
       </div>
+
+      
+      {/* 加载进度条 */}
+      <LoadingProgress
+        isVisible={showLoadingProgress}
+        onComplete={handleLoadingComplete}
+        duration={2000}
+      />
+
     </div>
   );
 }

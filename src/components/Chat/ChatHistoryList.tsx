@@ -1,102 +1,170 @@
 "use client";
+
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useGlobalStore } from "@/store/global";
 import { Button } from "@/components/ui/button";
-import { MessageSquare, MoreHorizontal } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { MessageSquare, MoreVertical, Download, Trash2, Edit } from "lucide-react";
 import { cn } from "@/utils/style";
-
-// 临时的示例数据类型
-interface ChatItem {
-  id: string;
-  title: string;
-  lastMessage: string;
-  timestamp: string;
-}
-
-// 示例数据
-const mockChatHistory: ChatItem[] = [
-  {
-    id: "1",
-    title: "关于机器学习的讨论",
-    lastMessage: "什么是深度学习？",
-    timestamp: "2小时前",
-  },
-  {
-    id: "2",
-    title: "编程问题咨询",
-    lastMessage: "如何优化React性能？",
-    timestamp: "昨天",
-  },
-  {
-    id: "3",
-    title: "数据分析方法",
-    lastMessage: "Python数据可视化",
-    timestamp: "3天前",
-  },
-];
+import { useChatStore } from "@/store/chat";
+import { toast } from "sonner";
+import ExportChatDialog from "./ExportChatDialog";
 
 export default function ChatHistoryList() {
   const { t } = useTranslation();
-  const { currentChatId, setCurrentChatId } = useGlobalStore();
+  const [exportDialogOpen, setExportDialogOpen] = useState(false);
+  const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
+  const [isHydrated, setIsHydrated] = useState(false);
+  
+  const {
+    sessions,
+    currentSession,
+    loadSession,
+    deleteSession,
+    updateSessionTitle,
+    getSessionHistory,
+  } = useChatStore();
 
-  const handleSelectChat = (chatId: string) => {
-    setCurrentChatId(chatId);
-    // TODO: 这里可以添加加载对话历史的逻辑
-    console.log("选择对话:", chatId);
+  // 确保水合完成后再获取聊天历史，避免水合错误
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
+
+  const chatHistory = isHydrated ? getSessionHistory() : [];
+
+  const handleSelectChat = (sessionId: string) => {
+    const success = loadSession(sessionId);
+    if (success) {
+      toast.success(t("session_loaded", "对话已加载"));
+    } else {
+      toast.error(t("session_load_failed", "加载对话失败"));
+    }
   };
 
-  if (mockChatHistory.length === 0) {
-    return (
-      <div className="text-center py-8 text-muted-foreground">
-        <MessageSquare className="w-8 h-8 mx-auto mb-2 opacity-50" />
-        <p className="text-sm">{t("no_chat_history", "暂无对话历史")}</p>
-      </div>
-    );
-  }
+  const handleDeleteChat = (sessionId: string) => {
+    const success = deleteSession(sessionId);
+    if (success) {
+      toast.success(t("session_deleted", "对话已删除"));
+    } else {
+      toast.error(t("session_delete_failed", "删除对话失败"));
+    }
+  };
+
+  const handleExportChat = (sessionId: string) => {
+    setSelectedSessionId(sessionId);
+    setExportDialogOpen(true);
+  };
+
+  const handleRenameChat = (sessionId: string) => {
+    const session = sessions.find(s => s.id === sessionId);
+    if (!session) return;
+    
+    const newTitle = prompt(t("enter_new_title", "请输入新标题（最多10个字符）"), session.title);
+    if (newTitle && newTitle.trim() && newTitle !== session.title) {
+      const trimmedTitle = newTitle.trim();
+      if (trimmedTitle.length > 10) {
+        toast.error(t("title_too_long", "标题过长，已自动截取前10个字符"));
+      }
+      const success = updateSessionTitle(sessionId, trimmedTitle);
+      if (success) {
+        toast.success(t("title_updated", "标题已更新"));
+      } else {
+        toast.error(t("title_update_failed", "更新标题失败"));
+      }
+    }
+  };
 
   return (
-    <div className="space-y-1">
-      {mockChatHistory.map((chat) => (
-        <div
-          key={chat.id}
-          className={cn(
-            "group flex items-center justify-between p-2 rounded-md cursor-pointer transition-colors",
-            "hover:bg-accent hover:text-accent-foreground",
-            currentChatId === chat.id
-              ? "bg-accent text-accent-foreground"
-              : "text-foreground"
-          )}
-          onClick={() => handleSelectChat(chat.id)}
-        >
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center space-x-2">
-              <MessageSquare className="w-4 h-4 flex-shrink-0" />
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{chat.title}</p>
-                <p className="text-xs text-muted-foreground truncate">
-                  {chat.lastMessage}
-                </p>
-              </div>
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              {chat.timestamp}
-            </p>
-          </div>
-          
-          <Button
-            variant="ghost"
-            size="sm"
-            className="opacity-0 group-hover:opacity-100 transition-opacity p-1 h-auto"
-            onClick={(e) => {
-              e.stopPropagation();
-              // TODO: 添加更多操作菜单
-              console.log("更多操作:", chat.id);
-            }}
-          >
-            <MoreHorizontal className="w-4 h-4" />
-          </Button>
+    <>
+      <div className="space-y-2">
+        <div className="text-sm font-medium text-muted-foreground px-3 py-2">
+          {t("chat_history", "聊天历史")}
         </div>
-      ))}
-    </div>
+        
+        {!isHydrated || chatHistory.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground">
+            <MessageSquare className="w-8 h-8 mx-auto mb-2 opacity-50" />
+            <p className="text-sm">{t("no_chat_history", "暂无聊天记录")}</p>
+          </div>
+        ) : (
+          <div className="space-y-1">
+            {chatHistory.map((chat) => (
+              <div
+                key={chat.id}
+                className={cn(
+                  "group flex items-center justify-between p-3 rounded-lg cursor-pointer transition-colors",
+                  "hover:bg-accent",
+                  currentSession?.id === chat.id
+                    ? "bg-accent border border-border"
+                    : "border border-transparent"
+                )}
+                onClick={() => handleSelectChat(chat.id)}
+              >
+                <div className="flex-1 min-w-0 overflow-hidden">
+                  <div className="flex items-center gap-2 mb-1">
+                    <MessageSquare className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                    <h3 className="text-sm font-medium truncate max-w-[calc(100%-20px)]" title={chat.title}>
+                      {chat.title.length > 20 ? `${chat.title.substring(0, 20)}...` : chat.title}
+                    </h3>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {chat.timestamp}
+                  </p>
+                </div>
+                
+                <div className="flex-shrink-0 ml-2">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <MoreVertical className="w-4 h-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => handleRenameChat(chat.id)}>
+                        <Edit className="w-4 h-4 mr-2" />
+                        {t("rename", "重命名")}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleExportChat(chat.id)}>
+                        <Download className="w-4 h-4 mr-2" />
+                        {t("export", "导出")}
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        onClick={() => handleDeleteChat(chat.id)}
+                        className="text-destructive"
+                      >
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        {t("delete", "删除")}
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+      
+      <ExportChatDialog
+        open={exportDialogOpen}
+        onClose={() => {
+          setExportDialogOpen(false);
+          setSelectedSessionId(null);
+        }}
+        sessionId={selectedSessionId || undefined}
+      />
+    </>
+
   );
 }

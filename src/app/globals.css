@@ -3,44 +3,150 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --background: 0 0% 100%;
+  * {
+    @apply border-border;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+  }
+}
 
-    --foreground: 222.2 84% 4.9%;
+@layer components {
+  /* 动画工具类 */
+  .animate-smooth {
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  
+  .animate-smooth-fast {
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  
+  .animate-smooth-slow {
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  
+  /* 按钮动画增强 */
+  .btn-enhanced {
+    @apply transition-all duration-200 ease-smooth;
+    transform: translateY(0);
+  }
+  
+  .btn-enhanced:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  .btn-enhanced:active {
+    transform: translateY(0);
+    transition-duration: 100ms;
+  }
+  
+  /* 卡片动画 */
+  .card-hover {
+    @apply transition-all duration-300 ease-smooth;
+  }
+  
+  .card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* 侧边栏动画 */
+  .sidebar-enter {
+    animation: slide-in-left 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  
+  .sidebar-exit {
+    animation: slide-out-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  /* 内容渐入动画 */
+  .content-fade-in {
+    animation: fade-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  
+  /* 微交互动画 */
+  .micro-bounce {
+    @apply transition-transform duration-200 ease-bounce;
+  }
+  
+  .micro-bounce:hover {
+    transform: scale(1.05);
+  }
+  
+  .micro-bounce:active {
+    transform: scale(0.98);
+  }
+  
+  /* 加载状态动画 */
+  .loading-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  /* 滚动条美化 */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 3px;
+    transition: background 0.2s ease;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground));
+  }
+}
+
+@layer base {
+  :root {
+    --background: 210 20% 98%;
+
+    --foreground: 210 40% 8%;
 
     --card: 0 0% 100%;
 
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 8%;
 
     --popover: 0 0% 100%;
 
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 8%;
 
-    --primary: 222.2 47.4% 11.2%;
+    --primary: 210 100% 40%;
 
-    --primary-foreground: 210 40% 98%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
+    --secondary: 210 40% 96%;
 
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary-foreground: 210 40% 8%;
 
-    --muted: 210 40% 96.1%;
+    --muted: 210 40% 96%;
 
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted-foreground: 210 20% 50%;
 
-    --accent: 210 40% 96.1%;
+    --accent: 210 100% 95%;
 
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent-foreground: 210 100% 40%;
 
     --destructive: 0 84.2% 60.2%;
 
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
+    --border: 210 40% 90%;
 
-    --input: 214.3 31.8% 91.4%;
+    --input: 210 40% 94%;
 
-    --ring: 222.2 84% 4.9%;
+    --ring: 210 100% 40%;
 
     --chart-1: 12 76% 61%;
 
@@ -55,43 +161,43 @@
     --radius: 0.5rem;
   }
   .dark {
-    --background: 222.2 84% 4.9%;
+    --background: 210 30% 8%;
 
     --foreground: 210 40% 98%;
 
-    --card: 222.2 84% 4.9%;
+    --card: 210 30% 12%;
 
     --card-foreground: 210 40% 98%;
 
-    --popover: 222.2 84% 4.9%;
+    --popover: 210 30% 12%;
 
     --popover-foreground: 210 40% 98%;
 
-    --primary: 210 40% 98%;
+    --primary: 210 100% 60%;
 
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 30% 8%;
 
-    --secondary: 217.2 32.6% 17.5%;
+    --secondary: 210 30% 18%;
 
     --secondary-foreground: 210 40% 98%;
 
-    --muted: 217.2 32.6% 17.5%;
+    --muted: 210 30% 18%;
 
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted-foreground: 210 20% 65%;
 
-    --accent: 217.2 32.6% 17.5%;
+    --accent: 210 30% 18%;
 
-    --accent-foreground: 210 40% 98%;
+    --accent-foreground: 210 100% 60%;
 
     --destructive: 0 62.8% 30.6%;
 
     --destructive-foreground: 210 40% 98%;
 
-    --border: 217.2 32.6% 17.5%;
+    --border: 210 30% 18%;
 
-    --input: 217.2 32.6% 17.5%;
+    --input: 210 30% 18%;
 
-    --ring: 212.7 26.8% 83.9%;
+    --ring: 210 100% 60%;
 
     --chart-1: 220 70% 50%;
 
@@ -144,4 +250,33 @@
   box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* 电科院专用样式 */
+@layer components {
+  .research-card {
+    @apply bg-card/80 backdrop-blur-sm border border-border/50 rounded-xl shadow-sm hover:shadow-md transition-all duration-300;
+  }
+  
+  .research-header {
+    @apply bg-gradient-to-r from-primary/5 to-accent/10 border border-primary/20 rounded-xl;
+  }
+  
+  .research-button {
+    @apply bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 transition-all duration-200 shadow-lg hover:shadow-xl;
+  }
+  
+  .institute-badge {
+    @apply w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center;
+  }
+  
+  .glass-effect {
+    @apply bg-card/50 backdrop-blur-sm border border-border/30;
+  }
 }

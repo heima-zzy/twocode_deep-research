@@ -49,7 +49,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import useModel from "@/hooks/useModelList";
+import { useModelList } from "@/hooks/useModelList";
 import { useSettingStore } from "@/store/setting";
 import {
   GEMINI_BASE_URL,
@@ -174,7 +174,7 @@ function convertModelName(name: string) {
     .join(" ");
 }
 
-let preLoading = false;
+// preLoading变量移至组件内部状态
 
 function HelpTip({ children, tip }: { children: ReactNode; tip: string }) {
   const [open, setOpen] = useState<boolean>(false);
@@ -212,9 +212,10 @@ function HelpTip({ children, tip }: { children: ReactNode; tip: string }) {
 function Setting({ open, onClose }: SettingProps) {
   const { t } = useTranslation();
   const { mode, provider, searchProvider, update } = useSettingStore();
-  const { modelList, refresh } = useModel();
+  const { modelList, refresh } = useModelList();
   const pwaInstall = usePWAInstall();
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+  const [preLoading, setPreLoading] = useState<boolean>(false);
 
   const thinkingModelList = useMemo(() => {
     const { provider } = useSettingStore.getState();
@@ -356,15 +357,19 @@ function Setting({ open, onClose }: SettingProps) {
 
   useLayoutEffect(() => {
     if (open && !preLoading) {
-      preLoading = true;
+      setPreLoading(true);
       fetchModelList();
     }
-  }, [open, fetchModelList]);
+    if (!open) {
+      setPreLoading(false);
+    }
+  }, [open, preLoading, fetchModelList]);
 
   useLayoutEffect(() => {
     if (open && mode === "") {
       const { apiKey, accessPassword, update } = useSettingStore.getState();
-      const requestMode = !apiKey && accessPassword ? "proxy" : "local";
+      // 如果有accessPassword，优先使用proxy模式；否则如果有apiKey，使用local模式；都没有则默认proxy
+      const requestMode = accessPassword ? "proxy" : (apiKey ? "local" : "proxy");
       update({ mode: requestMode });
       form.setValue("mode", requestMode);
     }

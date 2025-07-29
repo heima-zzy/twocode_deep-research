@@ -2,6 +2,7 @@ import { create } from "zustand";
 
 interface GlobalStore {
   openSetting: boolean;
+  openChatSetting: boolean;
   openHistory: boolean;
   openKnowledge: boolean;
   // 侧边栏是否打开的状态
@@ -15,6 +16,7 @@ interface GlobalStore {
 
 interface GlobalFunction {
   setOpenSetting: (visible: boolean) => void;
+  setOpenChatSetting: (visible: boolean) => void;
   setOpenHistory: (visible: boolean) => void;
   setOpenKnowledge: (visible: boolean) => void;
   // 设置侧边栏开关状态
@@ -27,15 +29,19 @@ interface GlobalFunction {
 
 export const useGlobalStore = create<GlobalStore & GlobalFunction>((set) => ({
   openSetting: false,
+  openChatSetting: false,
   openHistory: false,
   openKnowledge: false,
-  // 侧边栏的开关状态，桌面端默认打开，移动端默认关闭
-  sidebarOpen: typeof window !== 'undefined' ? window.innerWidth >= 1024 : true,
+
+  // 侧边栏的开关状态，默认关闭以避免SSR水合错误
+  sidebarOpen: false,
+
   // 当前选中的聊天会话ID，默认为空
   currentChatId: null,
   chatHistoryOpen: false,
   currentView: 'research',
   setOpenSetting: (visible) => set({ openSetting: visible }),
+  setOpenChatSetting: (visible) => set({ openChatSetting: visible }),
   setOpenHistory: (visible) => set({ openHistory: visible }),
   setOpenKnowledge: (visible) => set({ openKnowledge: visible }),
   // 设置侧边栏的开关状态，true为打开，false为关闭

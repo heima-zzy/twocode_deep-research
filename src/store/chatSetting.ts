@@ -1,11 +1,23 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-export interface SettingStore {
+// 聊天AI配置接口
+export interface ChatSettingStore {
+  // AI提供者配置
   provider: string;
   mode: string;
-  apiKey: string;
-  apiProxy: string;
+  model: string;
+  googleApiKey: string;
+  googleApiProxy: string;
+  
+  // 聊天参数
+  temperature: number;
+  maxTokens: number;
+  systemPrompt: string;
+  enableStreaming: boolean;
+  smoothStreamType: "character" | "word" | "line";
+  
+  // 各提供者的API密钥和代理配置
   openRouterApiKey: string;
   openRouterApiProxy: string;
   openRouterThinkingModel: string;
@@ -48,42 +60,26 @@ export interface SettingStore {
   accessPassword: string;
   thinkingModel: string;
   networkingModel: string;
-  enableSearch: string;
-  searchProvider: string;
-  tavilyApiKey: string;
-  tavilyApiProxy: string;
-  tavilyScope: string;
-  firecrawlApiKey: string;
-  firecrawlApiProxy: string;
-  exaApiKey: string;
-  exaApiProxy: string;
-  exaScope: string;
-  bochaApiKey: string;
-  bochaApiProxy: string;
-  searxngApiProxy: string;
-  searxngScope: string;
-  parallelSearch: number;
-  searchMaxResult: number;
-  crawler: string;
-  language: string;
-  theme: string;
-  debug: "enable" | "disable";
-  references: "enable" | "disable";
-  citationImage: "enable" | "disable";
-  smoothTextStreamType: "character" | "word" | "line";
-  onlyUseLocalResource: "enable" | "disable";
 }
 
-interface SettingFunction {
-  update: (values: Partial<SettingStore>) => void;
+interface ChatSettingFunction {
+  update: (values: Partial<ChatSettingStore>) => void;
   reset: () => void;
+  getApiKey: (provider: string) => string;
+  getApiProxy: (provider: string) => string;
 }
 
-export const defaultValues: SettingStore = {
+export const defaultChatValues: ChatSettingStore = {
   provider: "google",
   mode: "proxy",
-  apiKey: "",
-  apiProxy: "",
+  model: "gemini-2.0-flash",
+  googleApiKey: "",
+  googleApiProxy: "",
+  temperature: 0.7,
+  maxTokens: 4000,
+  systemPrompt: "你是一个有用的AI助手。",
+  enableStreaming: true,
+  smoothStreamType: "word",
   thinkingModel: "gemini-2.0-flash-thinking-exp",
   networkingModel: "gemini-2.0-flash",
   openRouterApiKey: "",
@@ -126,39 +122,69 @@ export const defaultValues: SettingStore = {
   ollamaThinkingModel: "",
   ollamaNetworkingModel: "",
   accessPassword: "",
-  enableSearch: "1",
-  searchProvider: "model",
-  tavilyApiKey: "",
-  tavilyApiProxy: "",
-  tavilyScope: "general",
-  firecrawlApiKey: "",
-  firecrawlApiProxy: "",
-  exaApiKey: "",
-  exaApiProxy: "",
-  exaScope: "research paper",
-  bochaApiKey: "",
-  bochaApiProxy: "",
-  searxngApiProxy: "",
-  searxngScope: "all",
-  parallelSearch: 1,
-  searchMaxResult: 5,
-  crawler: "jina",
-  language: "",
-  theme: "system",
-  debug: "disable",
-  references: "enable",
-  citationImage: "enable",
-  smoothTextStreamType: "word",
-  onlyUseLocalResource: "disable",
 };
 
-export const useSettingStore = create(
-  persist<SettingStore & SettingFunction>(
-    (set) => ({
-      ...defaultValues,
+export const useChatSettingStore = create(
+  persist<ChatSettingStore & ChatSettingFunction>(
+    (set, get) => ({
+      ...defaultChatValues,
       update: (values) => set(values),
-      reset: () => set(defaultValues),
+      reset: () => set(defaultChatValues),
+      getApiKey: (provider: string) => {
+        const state = get();
+        switch (provider) {
+          case "google":
+            return state.googleApiKey;
+          case "openai":
+            return state.openAIApiKey;
+          case "anthropic":
+            return state.anthropicApiKey;
+          case "deepseek":
+            return state.deepseekApiKey;
+          case "xai":
+            return state.xAIApiKey;
+          case "mistral":
+            return state.mistralApiKey;
+          case "openrouter":
+            return state.openRouterApiKey;
+          case "openaicompatible":
+            return state.openAICompatibleApiKey;
+          case "pollinations":
+            return ""; // Pollinations不需要API密钥
+          case "ollama":
+            return ""; // Ollama不需要API密钥
+          default:
+            return "";
+        }
+      },
+      getApiProxy: (provider: string) => {
+        const state = get();
+        switch (provider) {
+          case "google":
+            return state.googleApiProxy;
+          case "openai":
+            return state.openAIApiProxy;
+          case "anthropic":
+            return state.anthropicApiProxy;
+          case "deepseek":
+            return state.deepseekApiProxy;
+          case "xai":
+            return state.xAIApiProxy;
+          case "mistral":
+            return state.mistralApiProxy;
+          case "openrouter":
+            return state.openRouterApiProxy;
+          case "openaicompatible":
+            return state.openAICompatibleApiProxy;
+          case "pollinations":
+            return state.pollinationsApiProxy;
+          case "ollama":
+            return state.ollamaApiProxy;
+          default:
+            return "";
+        }
+      },
     }),
-    { name: "setting" }
+    { name: "chatSetting" }
   )
 );

@@ -164,120 +164,147 @@ function Topic() {
 
   // 渲染界面
   return (
-    <section className="p-4 border rounded-md mt-4 print:hidden">
+    <section className="space-y-6 print:hidden max-w-4xl mx-auto">
       {/* 标题栏 */}
-      <div className="flex justify-between items-center border-b mb-2">
-        <h3 className="font-semibold text-lg leading-10">
-          {t("research.topic.title")}
-        </h3>
-        <div className="flex gap-1">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => createNewResearch()}
-            title={t("research.common.newResearch")}
-          >
-            <SquarePlus />
-          </Button>
+      <div className="flex items-center justify-between p-6 bg-gradient-to-r from-primary/5 to-accent/10 rounded-xl border border-primary/20">
+        <div className="flex items-center space-x-3">
+          <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+            <BookText className="w-4 h-4 text-primary" />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold text-primary">
+              {t("research.topic.title")}
+            </h3>
+            <p className="text-sm text-muted-foreground">开始您的深度研究之旅</p>
+          </div>
         </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => createNewResearch()}
+          title={t("research.common.newResearch")}
+          className="border-primary/30 hover:bg-primary/10 hover:border-primary transition-all duration-200"
+        >
+          <SquarePlus className="w-4 h-4" />
+          <span className="ml-2">{t("research.common.newResearch")}</span>
+        </Button>
       </div>
 
       {/* 表单部分 */}
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)}>
-          {/* 主题输入框 - 用于输入研究主题的文本区域 */}
-          <FormField
-            control={form.control} // 表单控制器
-            name="topic" // 字段名称
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="mb-2 text-base font-semibold">
-                  {/* 使用i18n的t函数来获取研究主题标签的多语言翻译文本 */}
-                  {t("research.topic.topicLabel")}
-                </FormLabel>
-                <FormControl>
-                  {/* 多行文本输入框组件 */}
-                  <Textarea
-                    rows={3} // 设置文本框高度为3行
-                    placeholder={t("research.topic.topicPlaceholder")} // 占位文本
-                    {...field} // 展开字段属性
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
 
-          {/* 资源列表部分 */}
-          <FormItem className="mt-2">
-            <FormLabel className="mb-2 text-base font-semibold">
-              {t("knowledge.localResourceTitle")}
-            </FormLabel>
-            <FormControl onSubmit={(ev) => ev.stopPropagation()}>
-              <div>
-                {/* 显示已添加的资源 */}
-                {taskStore.resources.length > 0 ? (
-                  <ResourceList
-                    className="pb-2 mb-2 border-b"
-                    resources={taskStore.resources}
-                    onRemove={taskStore.removeResource}
-                  />
-                ) : null}
+      <div className="bg-card rounded-xl border border-border/50 p-6 shadow-sm">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+            {/* 主题输入框 - 用于输入研究主题的文本区域 */}
+            <FormField
+              control={form.control} // 表单控制器
+              name="topic" // 字段名称
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-base font-semibold text-foreground">
+                    {/* 使用i18n的t函数来获取研究主题标签的多语言翻译文本 */}
+                    {t("research.topic.topicLabel")}
+                  </FormLabel>
+                  <FormControl>
+                    {/* 多行文本输入框组件 */}
+                    <Textarea
+                      rows={3} // 设置文本框高度为3行
+                      placeholder={t("research.topic.topicPlaceholder")} // 占位文本
+                      className="border-2 border-input focus:border-primary transition-colors duration-200 rounded-lg"
+                      {...field} // 展开字段属性
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
 
-                {/* 添加资源下拉菜单 */}
-                {/* 下拉菜单组件，用于添加资源 */}
-                <DropdownMenu>
-                  {/* 触发下拉菜单的按钮 */}
-                  <DropdownMenuTrigger asChild>
-                    <div className="inline-flex border p-2 rounded-md text-sm cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800">
-                      <FilePlus className="w-5 h-5" />
-                      <span className="ml-1">{t("knowledge.addResource")}</span>
+            {/* 资源列表部分 */}
+            <FormItem className="space-y-4">
+              <FormLabel className="text-base font-semibold text-foreground">
+                {t("knowledge.localResourceTitle")}
+              </FormLabel>
+              <FormControl onSubmit={(ev) => ev.stopPropagation()}>
+                <div className="space-y-4">
+                  {/* 显示已添加的资源 */}
+                  {taskStore.resources.length > 0 ? (
+                    <div className="bg-accent/30 rounded-lg p-4 border border-accent">
+                      <ResourceList
+                        className="pb-2 mb-2 border-b border-accent"
+                        resources={taskStore.resources}
+                        onRemove={taskStore.removeResource}
+                      />
                     </div>
-                  </DropdownMenuTrigger>
-                  {/* 下拉菜单内容 */}
-                  <DropdownMenuContent>
-                    {/* 知识库选项 */}
-                    <DropdownMenuItem onClick={() => openKnowledgeList()}>
-                      <BookText />
-                      <span>{t("knowledge.knowledge")}</span>
-                    </DropdownMenuItem>
-                    {/* 本地文件选项 - 点击时检查配置并打开文件选择器 */}
-                    <DropdownMenuItem
-                      onClick={() =>
-                        handleCheck() && fileInputRef.current?.click()
-                      }
-                    >
-                      <Paperclip />
-                      <span>{t("knowledge.localFile")}</span>
-                    </DropdownMenuItem>
-                    {/* 网页爬虫选项 - 点击时检查配置并打开爬虫弹窗 */}
-                    <DropdownMenuItem
-                      onClick={() => handleCheck() && setOpenCrawler(true)}
-                    >
-                      <Link />
-                      <span>{t("knowledge.webPage")}</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            </FormControl>
-          </FormItem>
+                  ) : null}
 
-          {/* 提交按钮 */}
-          <Button className="w-full mt-4" disabled={isThinking} type="submit">
-            {isThinking ? (
-              <>
-                <LoaderCircle className="animate-spin" />
-                <span>{t("research.common.thinkingQuestion")}</span>
-                <small className="font-mono">{formattedTime}</small>
-              </>
-            ) : taskStore.questions === "" ? (
-              t("research.common.startThinking")
-            ) : (
-              t("research.common.rethinking")
-            )}
-          </Button>
-        </form>
-      </Form>
+                  {/* 添加资源下拉菜单 */}
+                  {/* 下拉菜单组件，用于添加资源 */}
+                  <DropdownMenu>
+                    {/* 触发下拉菜单的按钮 */}
+                    <DropdownMenuTrigger asChild>
+                      <div className="inline-flex border-2 border-dashed border-primary/30 p-3 rounded-lg text-sm cursor-pointer hover:bg-primary/5 hover:border-primary/50 transition-all duration-200">
+                        <FilePlus className="w-5 h-5 text-primary" />
+                        <span className="ml-2 font-medium text-primary">{t("knowledge.addResource")}</span>
+                      </div>
+                    </DropdownMenuTrigger>
+                    {/* 下拉菜单内容 */}
+                    <DropdownMenuContent>
+                      {/* 知识库选项 */}
+                      <DropdownMenuItem onClick={() => openKnowledgeList()}>
+                        <BookText />
+                        <span>{t("knowledge.knowledge")}</span>
+                      </DropdownMenuItem>
+                      {/* 本地文件选项 - 点击时检查配置并打开文件选择器 */}
+                      <DropdownMenuItem
+                        onClick={() =>
+                          handleCheck() && fileInputRef.current?.click()
+                        }
+                      >
+                        <Paperclip />
+                        <span>{t("knowledge.localFile")}</span>
+                      </DropdownMenuItem>
+                      {/* 网页爬虫选项 - 点击时检查配置并打开爬虫弹窗 */}
+                      <DropdownMenuItem
+                        onClick={() => handleCheck() && setOpenCrawler(true)}
+                      >
+                        <Link />
+                        <span>{t("knowledge.webPage")}</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </FormControl>
+            </FormItem>
+
+
+
+
+            {/* 提交按钮 */}
+            <Button 
+              className="w-full h-12 text-base font-semibold bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 transition-all duration-200 shadow-lg hover:shadow-xl" 
+              disabled={isThinking} 
+              type="submit"
+            >
+              {isThinking ? (
+                <>
+                  <LoaderCircle className="animate-spin mr-2" />
+                  <span>{t("research.common.thinkingQuestion")}</span>
+                  <small className="font-mono ml-2 bg-primary-foreground/20 px-2 py-1 rounded">{formattedTime}</small>
+                </>
+              ) : taskStore.questions === "" ? (
+                <>
+                  <BookText className="w-5 h-5 mr-2" />
+                  {t("research.common.startThinking")}
+                </>
+              ) : (
+                <>
+                  <BookText className="w-5 h-5 mr-2" />
+                  {t("research.common.rethinking")}
+                </>
+              )}
+            </Button>
+          </form>
+        </Form>
+      </div>
 
       {/* 隐藏的文件输入框 */}
       <input
