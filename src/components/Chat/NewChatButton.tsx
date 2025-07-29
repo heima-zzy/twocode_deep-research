@@ -1,4 +1,5 @@
 "use client";
+
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
@@ -41,11 +42,13 @@ export default function NewChatButton() {
     } finally {
       setIsCreating(false);
     }
+
   };
 
   return (
     <Button
       onClick={handleNewChat}
+
       disabled={isCreating}
       className="
         w-full justify-start transition-all duration-300 ease-smooth
@@ -62,6 +65,8 @@ export default function NewChatButton() {
         <Plus className="w-4 h-4 mr-2 transition-transform duration-200 group-hover:rotate-90" />
       )}
       {isCreating ? t("creating_chat", "创建中...") : t("new_chat", "新建对话")}
+
+
     </Button>
   );
 }

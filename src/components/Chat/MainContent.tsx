@@ -12,6 +12,7 @@ export default function MainContent({ children }: MainContentProps) {
   const { sidebarOpen, setSidebarOpen } = useGlobalStore();
 
   return (
+
     <div className="flex flex-col h-full relative">
       {/* 浮动侧边栏切换按钮 */}
       <Button
@@ -39,6 +40,7 @@ export default function MainContent({ children }: MainContentProps) {
           {/* 页面标题区域 */}
           <div className="flex items-center space-x-2 ml-12">
             <h2 className="text-lg font-semibold">湖南电科院</h2>
+
           </div>
         </div>
 

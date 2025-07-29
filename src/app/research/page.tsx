@@ -1,10 +1,13 @@
 "use client";
 import dynamic from "next/dynamic";
+
 import { useLayoutEffect, useState, useEffect } from "react";
+
 import { useTranslation } from "react-i18next";
 import { useTheme } from "next-themes";
 import { useGlobalStore } from "@/store/global";
 import { useSettingStore } from "@/store/setting";
+
 import { useTaskStore } from "@/store/task";
 import LoadingProgress from "@/components/LoadingProgress";
 
@@ -18,7 +21,9 @@ const SearchResult = dynamic(
 const FinalReport = dynamic(() => import("@/components/Research/FinalReport"));
 const History = dynamic(() => import("@/components/History"));
 const Knowledge = dynamic(() => import("@/components/Knowledge"));
+
 const ResearchSidebar = dynamic(() => import("@/components/Research/ResearchSidebar"));
+
 
 function Home() {
   const { t } = useTranslation();
@@ -33,6 +38,7 @@ function Home() {
 
   const { theme } = useSettingStore();
   const { setTheme } = useTheme();
+
   const { reset } = useTaskStore();
   
   // 左侧边栏状态
@@ -66,11 +72,13 @@ function Home() {
     return () => clearTimeout(timer);
   }, []);
 
+
   useLayoutEffect(() => {
     const settingStore = useSettingStore.getState();
     setTheme(settingStore.theme);
   }, [theme, setTheme]);
   return (
+
     <>
       {/* 页面加载动画 */}
       <LoadingProgress
@@ -142,6 +150,7 @@ function Home() {
       </footer>
       </div>
     </>
+
   );
 }
 

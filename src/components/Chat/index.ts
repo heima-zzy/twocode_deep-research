@@ -9,3 +9,4 @@ export { default as ChatInterface } from "./ChatInterface";
 export { default as ChatMessageList } from "./ChatMessageList";
 export { default as KnowledgeContextSelector } from "./KnowledgeContextSelector";
 export { default as ExportChatDialog } from "./ExportChatDialog";
+
