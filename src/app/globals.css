@@ -6,6 +6,95 @@
   * {
     @apply border-border;
   }
+
+/* 打印状态样式 */
+.printing {
+  /* 隐藏不需要打印的元素 */
+  .print\:hidden,
+  [data-sidebar],
+  nav,
+  header,
+  footer,
+  .sidebar,
+  .research-sidebar,
+  button,
+  .btn,
+  .dialog-overlay,
+  .dialog-content,
+  .tooltip,
+  .dropdown,
+  .menu,
+  .fixed.left-0,
+  .fixed.inset-0,
+  aside,
+  .sticky,
+  .floating-menu,
+  .float-menu-button,
+  [role="button"] {
+    display: none !important;
+  }
+  
+  /* 只隐藏UI控件中的图标，保留内容中的SVG */
+  button .lucide,
+  .float-menu-button .lucide,
+  .btn .lucide,
+  [role="button"] .lucide,
+  .dropdown .lucide,
+  .menu .lucide {
+    display: none !important;
+  }
+  
+  /* 主内容区域样式 */
+  main,
+  .main-content,
+  .research-content,
+  .final-report,
+  .transition-all,
+  .lg\:ml-96,
+  .container {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    margin-left: 0 !important;
+    padding: 20pt !important;
+    box-shadow: none !important;
+    border: none !important;
+    transform: none !important;
+  }
+  
+  /* MagicDown组件打印样式 */
+  .magicdown-view {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+    color: black !important;
+  }
+  
+  /* Prose样式重置 */
+  .prose {
+    max-width: none !important;
+    color: black !important;
+  }
+  
+  /* 确保报告内容在打印时可见 */
+  article {
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+    color: black !important;
+  }
+  
+  /* 确保文本内容可见 */
+  p, h1, h2, h3, h4, h5, h6, li, span, div {
+    color: black !important;
+    background: transparent !important;
+  }
+}
   
   html {
     scroll-behavior: smooth;
@@ -221,7 +310,189 @@
 }
 
 @page {
-  size: "A4";
+  size: A4;
+  margin: 1in;
+}
+
+/* 打印样式 */
+@media print {
+  /* 页面设置 */
+  @page {
+    margin: 0.5in;
+    size: A4;
+  }
+  /* 隐藏不需要打印的元素 */
+  .print\:hidden,
+  [data-sidebar],
+  nav,
+  header,
+  footer,
+  .sidebar,
+  .research-sidebar,
+  button,
+  .btn,
+  .dialog-overlay,
+  .dialog-content,
+  .tooltip,
+  .dropdown,
+  .menu,
+  /* 隐藏侧边栏相关元素 */
+  .fixed.left-0,
+  .fixed.inset-0,
+  /* 隐藏右侧设置面板 */
+  aside,
+  .sticky,
+  /* 隐藏MagicDown的浮动工具栏 */
+  .floating-menu,
+  .float-menu-button,
+  /* 隐藏所有按钮和交互元素 */
+  [role="button"],
+  .lucide,
+  svg {
+    display: none !important;
+  }
+  
+  /* 确保主内容区域占满整个页面 */
+  body {
+    background: white !important;
+    color: black !important;
+    font-size: 12pt;
+    line-height: 1.4;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  /* 主内容区域样式 */
+  main,
+  .main-content,
+  .research-content,
+  .final-report,
+  /* 确保主容器不受侧边栏影响 */
+  .transition-all,
+  .lg\:ml-96,
+  .container {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    margin-left: 0 !important;
+    padding: 20pt !important;
+    box-shadow: none !important;
+    border: none !important;
+    transform: none !important;
+  }
+  
+  /* MagicDown组件打印样式 */
+  .magicdown-view {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+    color: black !important;
+  }
+  
+  /* Prose样式重置 */
+  .prose {
+    max-width: none !important;
+    color: black !important;
+  }
+  
+  .prose h1,
+  .prose h2,
+  .prose h3,
+  .prose h4,
+  .prose h5,
+  .prose h6 {
+    color: black !important;
+    margin-top: 1.5em !important;
+    margin-bottom: 0.5em !important;
+  }
+  
+  .prose p {
+    color: black !important;
+    margin-top: 0.5em !important;
+    margin-bottom: 0.5em !important;
+  }
+  
+  .prose ul,
+  .prose ol {
+    color: black !important;
+    margin: 0.5em 0 !important;
+  }
+  
+  .prose li {
+    color: black !important;
+  }
+  
+  /* 网格布局调整 */
+  .grid,
+  .lg\:grid-cols-4,
+  .lg\:col-span-3 {
+    display: block !important;
+    grid-template-columns: none !important;
+    width: 100% !important;
+  }
+  
+  /* 确保文本内容可读 */
+  h1, h2, h3, h4, h5, h6 {
+    color: black !important;
+    page-break-after: avoid;
+  }
+  
+  p, div, span {
+    color: black !important;
+  }
+  
+  /* 避免内容被截断 */
+  .markdown-content,
+  .report-content,
+  article {
+    page-break-inside: avoid;
+  }
+  
+  /* 链接样式 */
+  a {
+    color: black !important;
+    text-decoration: underline;
+  }
+  
+  /* 代码块样式 */
+  pre,
+  code {
+    background: #f5f5f5 !important;
+    color: black !important;
+    border: 1px solid #ddd !important;
+  }
+  
+  /* 表格样式 */
+  table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+  }
+  
+  th,
+  td {
+    border: 1px solid black !important;
+    padding: 8px !important;
+    color: black !important;
+  }
+  
+  /* 确保图片适应页面 */
+  img {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+  
+  /* 表格样式 */
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  
+  th, td {
+    border: 1px solid black;
+    padding: 4pt;
+  }
 }
 
 .float-menu-button {

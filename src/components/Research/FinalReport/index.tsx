@@ -155,9 +155,21 @@ function FinalReport() {
 
   async function handleDownloadPDF() {
     const originalTitle = document.title;
-    document.title = taskStore.title;
-    window.print();
-    document.title = originalTitle;
+    document.title = taskStore.title || "研究报告";
+    
+    // 添加打印样式类
+    document.body.classList.add('printing');
+    
+    // 等待样式应用
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
+    try {
+      window.print();
+    } finally {
+      // 恢复原始状态
+      document.title = originalTitle;
+      document.body.classList.remove('printing');
+    }
   }
 
   useEffect(() => {
@@ -166,7 +178,7 @@ function FinalReport() {
 
   return (
     <>
-      <section className="space-y-6 print:hidden max-w-4xl mx-auto">
+      <section className="space-y-6 max-w-4xl mx-auto">
         {/* 标题栏 */}
         <div className="flex items-center justify-between p-6 bg-gradient-to-r from-primary/5 to-accent/10 rounded-xl border border-primary/20 print:hidden">
           <div className="flex items-center space-x-3">

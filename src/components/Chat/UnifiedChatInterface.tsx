@@ -184,11 +184,16 @@ export default function UnifiedChatInterface() {
             <div>
               <h1 className="text-xl font-semibold text-gray-900">
 
-                {t("welcome_to_chat", "电力行业检测分析助手")}
+
+                {t("welcome_to_chat", "检测行业动态收集分析助手")}
+
+
+                
+
 
               </h1>
               <p className="text-sm text-gray-500">
-                {t("chat_description", "专为湖南电科院打造的智能分析工具")}
+                {t("chat_description", "为及时掌握检测行业动态，提升战略决策科学性的智能分析工具")}
               </p>
             </div>
           </div>
@@ -246,10 +251,10 @@ export default function UnifiedChatInterface() {
               {/* 欢迎文字 */}
               <div className="space-y-4">
                 <h2 className="text-2xl font-bold text-gray-900">
-                  开始您的电力行业情报分析
+                  开始您的检测行业动态分析
                 </h2>
                 <p className="text-gray-600 leading-relaxed">
-                  我是您的专业助手，可以帮助您分析电力行业趋势、政策影响、技术发展等各类问题
+                  我是您的专业助手，可以帮助您分析检测行业政策、技术标准、市场趋势及竞争动态等各类问题
                 </p>
               </div>
 
@@ -266,7 +271,7 @@ export default function UnifiedChatInterface() {
                       <h4 className="text-lg font-semibold text-gray-900">智能问答</h4>
                     </div>
                     <p className="text-gray-600 text-sm leading-relaxed mb-4">
-                      与AI进行实时对话，获取即时回答和建议，支持电力行业专业知识问答
+                      与AI进行实时对话，获取即时回答和建议，支持检测行业专业知识问答
                     </p>
                     <div className="flex items-center justify-center text-blue-600 text-sm font-medium">
                       <span>立即开始对话</span>
@@ -285,7 +290,7 @@ export default function UnifiedChatInterface() {
                       <h4 className="text-lg font-semibold text-gray-900">行业情报分析</h4>
                     </div>
                     <p className="text-gray-600 text-sm leading-relaxed mb-4">
-                      深度分析电力行业趋势，生成详细的分析报告，助力决策制定
+                      深度分析检测行业动态，生成详细的分析报告，助力决策制定
                     </p>
                     <Link 
                       href="/research"
@@ -311,10 +316,10 @@ export default function UnifiedChatInterface() {
                 <p className="text-sm font-medium text-gray-700">试试这些问题：</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {[
-                    "分析当前电力行业发展趋势",
-                    "新能源政策对电网建设的影响",
-                    "智能电网技术最新进展",
-                    "电力市场化改革现状分析"
+                    "分析当前检测行业发展趋势",
+                    "检测技术标准政策变化影响",
+                    "检测设备技术最新进展",
+                    "检测市场竞争格局分析"
                   ].map((question, index) => (
                     <button
                       key={index}
