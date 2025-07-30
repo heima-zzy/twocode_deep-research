@@ -63,6 +63,8 @@ describe('ChatStore', () => {
       const { result } = renderHook(() => useChatStore());
       
       let sessionId1: string;
+
+
       
       // 创建第一个会话
       act(() => {
@@ -71,7 +73,9 @@ describe('ChatStore', () => {
       
       // 创建第二个会话
       act(() => {
+
         result.current.createSession('会话2');
+
       });
       
       // 当前会话应该是最后创建的'会话2'
@@ -310,9 +314,11 @@ describe('ChatStore', () => {
     it('应该能够获取会话历史列表', () => {
       const { result } = renderHook(() => useChatStore());
       
+
       // 创建第一个会话并添加消息
       act(() => {
         result.current.createSession('会话1');
+
       });
       
       act(() => {
@@ -321,7 +327,9 @@ describe('ChatStore', () => {
       
       // 创建第二个会话并添加消息
       act(() => {
+
         result.current.createSession('会话2');
+
       });
       
       act(() => {
@@ -342,7 +350,9 @@ describe('ChatStore', () => {
     it('应该能够导出会话数据', () => {
       const { result } = renderHook(() => useChatStore());
       
+
       let sessionId: string = '';
+
       act(() => {
         sessionId = result.current.createSession('导出测试');
         result.current.addMessage({ type: 'assistant', content: '测试消息' }); // 使用assistant消息避免标题被覆盖

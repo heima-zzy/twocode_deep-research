@@ -1,4 +1,5 @@
 "use client";
+
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
@@ -164,5 +165,6 @@ export default function ChatHistoryList() {
         sessionId={selectedSessionId || undefined}
       />
     </>
+
   );
 }

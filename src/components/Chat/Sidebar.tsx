@@ -7,6 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import NewChatButton from "./NewChatButton";
 import ChatHistoryList from "./ChatHistoryList";
 import ChatSetting from "@/components/ChatSetting";
+
 import Link from "next/link";
 import {
   MessageSquarePlus,
@@ -15,11 +16,13 @@ import {
   BookOpen,
   Search,
 
+
 } from "lucide-react";
 
 export default function Sidebar() {
   const { t } = useTranslation();
   const {
+
     openChatSetting,
     setOpenChatSetting,
     setOpenHistory,
@@ -32,6 +35,7 @@ export default function Sidebar() {
 
   const handleCloseChatSetting = () => {
     setOpenChatSetting(false);
+
   };
 
   const handleOpenHistory = () => {
@@ -52,11 +56,13 @@ export default function Sidebar() {
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
               <MessageSquarePlus className="w-5 h-5 text-primary-foreground" />
             </div>
+
             <h1 className="font-semibold text-lg">{t("app_name", "湖南电科院")}</h1>
           </div>
           
           {/* 桌面端折叠按钮 */}
          {/*  <Button
+
             variant="ghost"
             size="sm"
             className="hidden lg:flex p-1 h-8 w-8"
@@ -64,6 +70,7 @@ export default function Sidebar() {
           >
             <ChevronLeft className="w-4 h-4" />
           </Button>
+
           */}
         </div>
 
@@ -71,22 +78,27 @@ export default function Sidebar() {
         <div className="btn-enhanced micro-bounce">
           <NewChatButton />
         </div>
+
       </div>
 
       <Separator />
 
       {/* 中间内容区域 */}
       <div className="flex-1 overflow-hidden">
+
         <ScrollArea className="h-full custom-scrollbar">
+
           <div className="p-4 space-y-4">
             {/* 历史对话列表 */}
             <div>
               <h3 className="text-sm font-medium text-muted-foreground mb-2">
                 {t("recent_chats", "最近对话")}
               </h3>
+
               <div className="card-hover animate-smooth">
                 <ChatHistoryList />
               </div>
+
             </div>
 
             <Separator />
@@ -99,12 +111,14 @@ export default function Sidebar() {
               <div className="space-y-1">
                 <Link
                   href="/research"
+
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(e) => {
                     e.preventDefault();
                     window.open('/research', '_blank', 'noopener,noreferrer');
               }}
+
                   className="flex items-center space-x-3 w-full p-2 text-sm rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
                 >
                   <Search className="w-4 h-4" />
@@ -123,26 +137,31 @@ export default function Sidebar() {
         <Button
           variant="ghost"
           size="sm"
+
           className="w-full justify-start btn-enhanced micro-bounce animate-smooth"
           onClick={handleOpenHistory}
         >
           <History className="w-4 h-4 mr-2 transition-transform duration-200" />
+
           {t("history.title", "历史记录")}
         </Button>
         
         <Button
           variant="ghost"
           size="sm"
+
           className="w-full justify-start btn-enhanced micro-bounce animate-smooth"
           onClick={handleOpenKnowledge}
         >
           <BookOpen className="w-4 h-4 mr-2 transition-transform duration-200" />
+
           {t("knowledge.title", "知识库")}
         </Button>
         
         <Button
           variant="ghost"
           size="sm"
+
           className="w-full justify-start btn-enhanced micro-bounce animate-smooth"
           onClick={handleOpenChatSetting}
         >
@@ -156,6 +175,7 @@ export default function Sidebar() {
         open={openChatSetting} 
         onClose={handleCloseChatSetting} 
       />
+
     </div>
   );
 }

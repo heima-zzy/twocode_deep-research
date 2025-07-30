@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import Link from "next/link";
+
 import { Send, Search, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useChat } from "@/hooks/useChat";
@@ -10,9 +11,11 @@ import KnowledgeContextSelector from "./KnowledgeContextSelector";
 import { useChatSettingStore } from "@/store/chatSetting";
 import LoadingProgress from "@/components/LoadingProgress";
 
+
 export default function WelcomeSection() {
   const { t } = useTranslation();
   const [message, setMessage] = useState("");
+
   const [selectedKnowledgeIds, setSelectedKnowledgeIds] = useState<string[]>([]);
   const [showLoadingProgress, setShowLoadingProgress] = useState(false);
   
@@ -30,6 +33,7 @@ export default function WelcomeSection() {
       } catch (error) {
         console.error("发送消息失败:", error);
       }
+
     }
   };
 
@@ -40,6 +44,7 @@ export default function WelcomeSection() {
     }
   };
 
+
   const handleDeepResearchClick = (e: React.MouseEvent) => {
     e.preventDefault();
     setShowLoadingProgress(true);
@@ -49,6 +54,7 @@ export default function WelcomeSection() {
     setShowLoadingProgress(false);
     window.location.href = '/research';
   };
+
 
   return (
     <div className="flex flex-col items-center justify-center h-full p-8">
@@ -65,6 +71,7 @@ export default function WelcomeSection() {
 
         {/* 聊天输入区域 */}
         <div className="w-full max-w-2xl mx-auto space-y-4">
+
           <div className="space-y-3">
             {/* 知识库上下文选择器 */}
             <div className="flex items-center justify-between">
@@ -104,13 +111,16 @@ export default function WelcomeSection() {
                 )}
               </Button>
             </div>
+
           </div>
           
           {/* 深度研究按钮 */}
           <div className="flex justify-center">
             <Link
               href="/research"
+
               onClick={handleDeepResearchClick}
+
               className="inline-flex items-center px-6 py-3 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 transition-colors font-medium"
             >
               <Search className="w-5 h-5 mr-2" />
@@ -135,6 +145,7 @@ export default function WelcomeSection() {
           </div>
         </div>
       </div>
+
       
       {/* 加载进度条 */}
       <LoadingProgress
@@ -142,6 +153,7 @@ export default function WelcomeSection() {
         onComplete={handleLoadingComplete}
         duration={2000}
       />
+
     </div>
   );
 }

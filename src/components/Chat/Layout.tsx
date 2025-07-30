@@ -1,6 +1,8 @@
 "use client";
+
 import { ReactNode, useEffect } from "react";
 import { useGlobalStore } from "@/store/global";
+
 
 import Sidebar from "./Sidebar";
 import MainContent from "./MainContent";
@@ -11,6 +13,7 @@ interface ChatLayoutProps {
 
 export default function ChatLayout({ children }: ChatLayoutProps) {
   const { sidebarOpen, setSidebarOpen } = useGlobalStore();
+
 
   useEffect(() => {
     const handleResize = () => {
@@ -56,10 +59,13 @@ export default function ChatLayout({ children }: ChatLayoutProps) {
         flex-1 flex flex-col h-screen transition-all duration-400 ease-smooth
         ${sidebarOpen ? 'ml-80' : 'ml-0'}
       `}>
+
         <MainContent>
           {children}
         </MainContent>
       </div>
+
     </>
+
   );
 }
