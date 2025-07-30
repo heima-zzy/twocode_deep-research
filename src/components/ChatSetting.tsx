@@ -44,7 +44,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useModelList } from "@/hooks/useModelList";
+
+import { useChatModelList } from "@/hooks/useChatModelList";
+
 import { useChatSettingStore } from "@/store/chatSetting";
 import {
   OPENAI_BASE_URL,
@@ -143,7 +145,9 @@ function HelpTip({ children, tip }: { children: ReactNode; tip: string }) {
 function ChatSetting({ open, onClose }: ChatSettingProps) {
   const { t } = useTranslation();
   const { mode, provider, update } = useChatSettingStore();
-  const { modelList, refresh } = useModelList();
+
+  const { modelList, refresh } = useChatModelList();
+
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [hasPreLoaded, setHasPreLoaded] = useState<boolean>(false);
 

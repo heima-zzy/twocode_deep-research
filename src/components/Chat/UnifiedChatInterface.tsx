@@ -183,7 +183,9 @@ export default function UnifiedChatInterface() {
             </div>
             <div>
               <h1 className="text-xl font-semibold text-gray-900">
-                {t("welcome_to_chat", "电力行业情报分析助手")}
+
+                {t("welcome_to_chat", "电力行业检测分析助手")}
+
               </h1>
               <p className="text-sm text-gray-500">
                 {t("chat_description", "专为湖南电科院打造的智能分析工具")}
