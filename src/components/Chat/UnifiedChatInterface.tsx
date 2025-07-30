@@ -183,7 +183,12 @@ export default function UnifiedChatInterface() {
             </div>
             <div>
               <h1 className="text-xl font-semibold text-gray-900">
+
                 {t("welcome_to_chat", "检测行业动态收集分析助手")}
+
+
+                
+
               </h1>
               <p className="text-sm text-gray-500">
                 {t("chat_description", "为及时掌握检测行业动态，提升战略决策科学性的智能分析工具")}
